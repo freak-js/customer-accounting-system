@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'accounting_system'
 ]
 
 MIDDLEWARE = [
@@ -99,6 +100,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = 'accounting_system.Manager'
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
