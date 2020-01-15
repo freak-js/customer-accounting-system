@@ -25,8 +25,9 @@ urlpatterns = [
                                           redirect_authenticated_user=True), name="login"),
     path('login/', auth_views.LoginView.as_view(template_name='accounting_system/auth.html',
                                                 redirect_authenticated_user=True), name="login"),
+    path('auth/', views.auth, name='auth'),
     path('logout/', views.logout_view, name='logout_view'),
     path('clients/', views.clients, name='clients'),
     path('staff/', views.staff, name='staff'),
-    path('auth/', views.auth, name='auth'),
+    path('add-manager/', views.add_manager, name='add_manager'),
 ]

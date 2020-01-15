@@ -1,3 +1,5 @@
+{% load static %}
+
 <div class="left-panel">
 
     <div class="panel-div-img">
@@ -6,9 +8,9 @@
 
     </div>
 
-    <a class="left-panel-link" href=""><img class="link-img" src="{% static 'accounting_system/client.png' %}" alt="logo">КЛИЕНТЫ</a>
+    <a class="left-panel-link" href="/clients/"><img class="link-img" src="{% static 'accounting_system/client.png' %}" alt="logo">КЛИЕНТЫ</a>
 
-    <a class="left-panel-link" href=""><img class="link-img" src="{% static 'accounting_system/staff.png' %}" alt="logo">СОТРУДНИКИ</a>
+    <a class="left-panel-link" href="/staff/"><img class="link-img" src="{% static 'accounting_system/staff.png' %}" alt="logo">СОТРУДНИКИ</a>
 
     <a class="left-panel-link" href=""><img class="link-img" src="{% static 'accounting_system/tasks.png' %}" alt="logo">ЗАДАЧИ</a>
 

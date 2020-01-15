@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 
 
 class Manager(AbstractUser):
+    username = models.CharField(verbose_name='Логин', max_length=150, unique=True)
 
     def __str__(self):
         return self.first_name + ' ' + self.last_name
