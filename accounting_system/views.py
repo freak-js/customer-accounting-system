@@ -1,10 +1,24 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
 
 
-# Ручки-рендеры
+@login_required
+def clients(request):
+    return render(request, 'accounting_system/clients.html')
 
-def welcome(request):
-    return render(request, 'accounting_system/welcome.html')
 
+@login_required
+def staff(request):
+    return render(request, 'accounting_system/staff.html')
+
+
+@login_required
 def auth(request):
-    return render(request, 'accounting_system/auth.html')
+    return render(request, 'accounting_system/auth.html', {'form': AuthenticationForm})
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')

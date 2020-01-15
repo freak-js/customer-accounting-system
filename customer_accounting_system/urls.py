@@ -16,9 +16,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from accounting_system import views
+from django.contrib.auth import views as auth_views
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('welcome/', views.welcome, name='welcome'),
+    path('', auth_views.LoginView.as_view(template_name='accounting_system/auth.html',
+                                          redirect_authenticated_user=True), name="login"),
+    path('login/', auth_views.LoginView.as_view(template_name='accounting_system/auth.html',
+                                                redirect_authenticated_user=True), name="login"),
+    path('logout/', views.logout_view, name='logout_view'),
+    path('clients/', views.clients, name='clients'),
+    path('staff/', views.staff, name='staff'),
     path('auth/', views.auth, name='auth'),
 ]

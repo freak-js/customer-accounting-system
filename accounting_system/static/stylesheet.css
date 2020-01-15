@@ -13,7 +13,60 @@ select:focus{outline: none;}
 
 a{text-decoration: none;}
 
+input:focus{outline: none;}
+
+li{list-style-type: none;}
+
+.flex-center{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.flex-center-column{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 /* DIV */
+
+.auth-page{
+    background: radial-gradient(#35b1ff -160%, #2D353D);
+}
+
+.auth-div{
+    width: 260px;
+    background-color: white;
+    border-radius: 30px;
+}
+
+.auth-form input{
+    width: 245px;
+    height: 32px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 18px;
+    color: #2D353D;
+    text-align: center;
+    border: 2px solid #320d67;
+    border-radius: 15px;
+    letter-spacing: 1px;
+}
+
+.auth-form label{
+    color: #320d68;
+    font-size: 20px;
+    margin-top: 5px;
+}
+
+.auth-form ul{
+    margin: 0;
+    text-align: center;
+    color: #c40d0d;
+    padding: 10px 0;
+    background-color: #ed63631f;
+}
 
 .header{
     width: 100%;
@@ -64,6 +117,26 @@ a{text-decoration: none;}
     letter-spacing: 1px;
 }
 
+.auth-button{
+    width: 230px;
+    height: 40px;
+    margin: 25px 0 10px 0;
+    border: none;
+    border-radius: 15px;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    background: linear-gradient(45deg, #5f30af, #30a1e8);
+    transition: 500ms;
+    background-size: 150% 150%;
+    animation: gradient 10s ease infinite;
+}
+
+.auth-button:hover{
+    letter-spacing: 2px;
+    cursor: pointer;
+}
+
 /* LINKS */
 
 .left-panel-link{
@@ -85,6 +158,11 @@ a{text-decoration: none;}
 
 /* IMG */
 
+.auth-logo{
+    height: 40px;
+    margin: 10px 0;
+}
+
 .header-img{
     height: 59px;
     margin-top: 5px;
@@ -99,4 +177,18 @@ a{text-decoration: none;}
 
 .left-panel-img{
     height: 75px;
+}
+
+/* ANIMATION */
+
+@keyframes gradient {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
 }
