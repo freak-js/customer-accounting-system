@@ -29,12 +29,27 @@ input:focus{outline: none;}
 
 li{list-style-type: none;}
 
-h3{margin: 5px 0 5px 0;}
+h1{margin: 7px 0;}
+
+h3{margin: 2px 0;}
+
+.h-100{
+    height: 100%;
+}
+
+.d-flex{
+    display: flex;
+}
 
 .flex-center{
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.flex-column{
+    display: flex;
+    flex-direction: column;
 }
 
 .flex-center-column{
@@ -171,16 +186,12 @@ h3{margin: 5px 0 5px 0;}
 .manager-container{
     display: flex;
     justify-content: space-between;
-    height: 105px;
+    height: 95px;
     padding: 0 0 0 20px;
     margin: 0 20px 10px 20px;
     color: #2d353d;
     border: 2px solid;
-    border-radius: 20px;
-}
-
-.manager-container h1{
-    margin: 10px 0;
+    border-radius: 17px;
 }
 
 .delete-manager-form{
@@ -269,13 +280,13 @@ h3{margin: 5px 0 5px 0;}
 
 .client-container{
     display: flex;
-    flex-direction: column;
-    height: 100px;
+    justify-content: space-between;
+    height: 57px;
     padding: 0 0 0 20px;
     margin: 0 20px 10px 20px;
     color: #2d353d;
     border: 2px solid;
-    border-radius: 20px;
+    border-radius: 15px;
 }
 
 /* BUTTONS */
@@ -342,7 +353,6 @@ h3{margin: 5px 0 5px 0;}
     border-radius: 0 20px 20px 0;
     color: #2d353d;
     font-size: 21px;
-    font-weight: bold;
     background-color: #fff;
     transition: 500ms;
 }
@@ -366,6 +376,23 @@ h3{margin: 5px 0 5px 0;}
 }
 
 .delete-button-delete_manager:hover{
+    letter-spacing: 1px;
+    cursor: pointer;
+}
+
+.client-add-service-button{
+    width: 160px;
+    height: 100%;
+    border: none;
+    border-left: 2px solid #2d353d;
+    border-radius: 0 20px 20px 0;
+    color: #2d353d;
+    font-size: 21px;
+    background-color: #fff;
+    transition: 500ms;
+}
+
+.client-add-service-button:hover{
     letter-spacing: 1px;
     cursor: pointer;
 }
@@ -460,6 +487,12 @@ h3{margin: 5px 0 5px 0;}
 
 .left-panel-img{
     height: 75px;
+}
+
+/* TEXT */
+
+.client-container-span{
+    font-size: 14px;
 }
 
 /* ANIMATION */

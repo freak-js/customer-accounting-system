@@ -8,16 +8,17 @@ from .models import Manager, Client
 
 @login_required
 def auth(request):
+    """"""
     return render(request, 'accounting_system/auth.html', {'form': AuthenticationForm})
 
 
 @login_required
 def clients(request):
     if request.user.is_staff:
-        clients = Client.objects.all().filter(active=True)
+        clients = Client.objects.all().filter(active=True)[:5][::-1]
     else:
-        clients = request.user.get_clients().filter(active=True)
-    context = {'page': 'clients', 'manager_name': str(request.user), 'clients': clients}
+        clients = request.user.get_clients().filter(active=True)[:5][::-1]
+    context = {'page': 'clients', 'manager_name': str(request.user), 'manager': request.user, 'clients': clients}
     return render(request, 'accounting_system/clients.html', context)
 
 
@@ -29,6 +30,18 @@ def add_client(request):
     managers = Manager.objects.all().filter(is_active=True)
     context = {'page': 'clients', 'manager_name': str(request.user), 'manager': request.user, 'managers': managers}
     return render(request, 'accounting_system/add_client.html', context)
+
+
+@login_required
+def delete_client(request):
+    if client_pk := request.POST.get('client_pk_for_delete'):
+        client = get_object_or_404(Client, pk=client_pk)
+        client.kill()
+        return redirect('clients')
+    client_pk = request.POST.get('manager_pk')
+    client = get_object_or_404(Manager, pk=client_pk)
+    context = {'page': 'staff', 'manager_name': str(request.user), 'client': client}
+    return render(request, 'accounting_system/delete_client.html', context)
 
 
 @login_required

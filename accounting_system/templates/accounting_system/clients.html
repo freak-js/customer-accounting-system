@@ -25,13 +25,45 @@
 
                 <div class="client-container">
 
-                    <h3>{{ client.organization_name }}</h3>
+                    <div class="flex-column">
 
-                    <div>
+                        <h3>{{ client.organization_name }}</h3>
 
-                        <span>В работе:</span>
-                        <span>Завершено:</span>
-                        <span>Потрачено:</span>
+                        <div>
+
+                            <span><span class="client-container-span">тел: </span>{{ client.phone_number }}</span>&nbsp;&nbsp;&nbsp;&nbsp;
+
+                            <span><span class="client-container-span">ИНН: </span>{{ client.inn }}</span>&nbsp;&nbsp;&nbsp;&nbsp;
+
+                            {% if manager.is_staff %}
+
+                                <span><span class="client-container-span">менеджер: </span>{{ client.manager }}</span>&nbsp;&nbsp;&nbsp;&nbsp;
+
+                            {% endif %}
+
+                            <span><span class="client-container-span">услуг: </span>{{ client.services.all.count }}</span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="d-flex">
+
+                        <form class="h-100" action="/add-service/" method="post">
+
+                            {% csrf_token %}
+
+                            <button class="client-add-service-button" name="manager_pk" value="{{ client.pk }}">добавить услугу</button>
+
+                        </form>
+
+                        <form class="h-100" action="/delete-client/" method="post">
+
+                            {% csrf_token %}
+
+                            <button class="manager-delete-button" name="manager_pk" value="{{ client.pk }}">удалить</button>
+
+                        </form>
 
                     </div>
 
