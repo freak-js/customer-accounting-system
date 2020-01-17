@@ -8,6 +8,13 @@ class Manager(AbstractUser):
     def __str__(self):
         return self.first_name + ' ' + self.last_name
 
+    def kill(self):
+        self.is_active = False
+        self.save(update_fields=['is_active'])
+
+    def get_clients(self):
+        return self.client.all()
+
 
 class Client(models.Model):
     organization_name = models.CharField('Название организации', max_length=100)
@@ -18,11 +25,30 @@ class Client(models.Model):
     email = models.CharField('Email', max_length=100, null=True, blank=True)
     inn = models.IntegerField('ИНН')
     comment = models.TextField('Комментарий', null=True, blank=True)
-    manager = models.ForeignKey(Manager, on_delete=models.SET_NULL, null=True)
+    manager = models.ForeignKey(Manager, on_delete=models.SET_NULL, related_name='client', null=True)
     active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.organization_name
+
+    @staticmethod
+    def save_client(post):
+        try:
+            client = Client(
+                organization_name=post['organization_name'],
+                first_name=post['first_name'],
+                last_name=post['last_name'],
+                patronymic=post['patronymic'],
+                phone_number=post['phone_number'],
+                email=post['email'],
+                inn=post['inn'],
+                comment=post['comment'],
+                manager=Manager.objects.get(pk=post['manager'])
+            )
+            client.save()
+        except Exception:
+            return False
+        return client
 
 
 class ECP(models.Model):

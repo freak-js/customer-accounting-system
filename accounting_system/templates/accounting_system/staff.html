@@ -21,6 +21,40 @@
 
             </div>
 
+            {% for manager in managers %}
+
+                <div class="manager-container">
+
+                    <div>
+
+                        <h1>{{ manager.first_name }} {{ manager.last_name }}</h1>
+
+                        <div class="manager-data">
+
+                            <span>В работе:</span>
+                            <span>Завершено:</span>
+                            <span>Потрачено:</span>
+
+                        </div>
+
+                    </div>
+
+                    <form action="/delete-manager/" method="post">
+
+                        {% csrf_token %}
+
+                        {% if not manager.is_staff  %}
+
+                            <button class="manager-delete-button" name="manager_pk" value="{{ manager.pk }}">Удалить</button>
+
+                        {% endif %}
+
+                    </form>
+
+                </div>
+
+            {% endfor %}
+
         </div>
 
     </div>

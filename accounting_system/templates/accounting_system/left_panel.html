@@ -8,12 +8,14 @@
 
     </div>
 
-    <a class="left-panel-link" href="/clients/"><img class="link-img" src="{% static 'accounting_system/client.png' %}" alt="logo">КЛИЕНТЫ</a>
+    <a class="{% if page == 'clients' %} left-panel-select-link {% else %} left-panel-link {% endif %}" href="/clients/"><img class="link-img" src="{% static 'accounting_system/client.png' %}" alt="logo">КЛИЕНТЫ</a>
 
-    <a class="left-panel-link" href="/staff/"><img class="link-img" src="{% static 'accounting_system/staff.png' %}" alt="logo">СОТРУДНИКИ</a>
+    <a class="{% if page == 'staff' %} left-panel-select-link {% else %} left-panel-link {% endif %}" href="/staff/"><img class="link-img" src="{% static 'accounting_system/staff.png' %}" alt="logo">СОТРУДНИКИ</a>
 
-    <a class="left-panel-link" href=""><img class="link-img" src="{% static 'accounting_system/tasks.png' %}" alt="logo">ЗАДАЧИ</a>
+    <a class="{% if page == 'tasks' %} left-panel-select-link {% else %} left-panel-link {% endif %}" href="/tasks/"><img class="link-img" src="{% static 'accounting_system/tasks.png' %}" alt="logo">ЗАДАЧИ</a>
 
-    <a class="left-panel-link" href=""><img class="link-img" src="{% static 'accounting_system/calendar.png' %}" alt="logo">КАЛЕНДАРЬ</a>
+    <a class="{% if page == 'calendar' %} left-panel-select-link {% else %} left-panel-link {% endif %}" href="/calendar/"><img class="link-img" src="{% static 'accounting_system/calendar.png' %}" alt="logo">КАЛЕНДАРЬ</a>
+
+    <a class="{% if page == 'service' %} left-panel-select-link {% else %} left-panel-link {% endif %}" href="/service/"><img class="link-img" src="{% static 'accounting_system/service.png' %}" alt="logo">УСЛУГИ</a>
 
 </div>

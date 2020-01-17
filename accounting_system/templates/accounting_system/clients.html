@@ -15,7 +15,25 @@
 
         <div class="right-panel">
 
+            <div class="right-panel-header">
 
+                <a class="add-manager-link" href="/add-client/">ДОБАВИТЬ КЛИЕНТА</a>
+
+            </div>
+
+            {% for client in clients %}
+
+                <h3>{{ client.organization_name }}</h3>
+
+                <div>
+
+                    <span>В работе:</span>
+                    <span>Завершено:</span>
+                    <span>Потрачено:</span>
+
+                </div>
+
+            {% endfor %}
 
         </div>
 
