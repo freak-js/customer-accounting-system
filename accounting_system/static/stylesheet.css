@@ -29,6 +29,8 @@ input:focus{outline: none;}
 
 li{list-style-type: none;}
 
+h3{margin: 5px 0 5px 0;}
+
 .flex-center{
     display: flex;
     justify-content: center;
@@ -263,6 +265,17 @@ li{list-style-type: none;}
     font-family: 'Oswald', sans-serif;
     border: 2px solid #2d353d;
     border-radius: 10px;
+}
+
+.client-container{
+    display: flex;
+    flex-direction: column;
+    height: 100px;
+    padding: 0 0 0 20px;
+    margin: 0 20px 10px 20px;
+    color: #2d353d;
+    border: 2px solid;
+    border-radius: 20px;
 }
 
 /* BUTTONS */
