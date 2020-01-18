@@ -29,6 +29,7 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout_view'),
     path('clients/', views.clients, name='clients'),
     path('add-client/', views.add_client, name='add_client'),
+    path('delete-client/', views.delete_client, name='delete_client'),
     path('staff/', views.staff, name='staff'),
     path('add-manager/', views.add_manager, name='add_manager'),
     path('delete-manager/', views.delete_manager, name='delete_manager'),

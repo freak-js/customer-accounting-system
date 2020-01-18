@@ -10,7 +10,11 @@
 
     <a class="{% if page == 'clients' %} left-panel-select-link {% else %} left-panel-link {% endif %}" href="/clients/"><img class="link-img" src="{% static 'accounting_system/client.png' %}" alt="logo">КЛИЕНТЫ</a>
 
+    {% if manager.is_staff %}
+
     <a class="{% if page == 'staff' %} left-panel-select-link {% else %} left-panel-link {% endif %}" href="/staff/"><img class="link-img" src="{% static 'accounting_system/staff.png' %}" alt="logo">СОТРУДНИКИ</a>
+
+    {% endif %}
 
     <a class="{% if page == 'tasks' %} left-panel-select-link {% else %} left-panel-link {% endif %}" href="/tasks/"><img class="link-img" src="{% static 'accounting_system/tasks.png' %}" alt="logo">ЗАДАЧИ</a>
 

@@ -53,7 +53,7 @@
 
                             {% csrf_token %}
 
-                            <button class="client-add-service-button" name="manager_pk" value="{{ client.pk }}">добавить услугу</button>
+                            <button class="client-add-service-button" name="client_pk" value="{{ client.pk }}"><b>+</b> услуга</button>
 
                         </form>
 
@@ -61,7 +61,7 @@
 
                             {% csrf_token %}
 
-                            <button class="manager-delete-button" name="manager_pk" value="{{ client.pk }}">удалить</button>
+                            <button class="manager-delete-button" name="client_pk" value="{{ client.pk }}">удалить</button>
 
                         </form>
 

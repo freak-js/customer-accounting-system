@@ -13,7 +13,7 @@ class Manager(AbstractUser):
         self.save(update_fields=['is_active'])
 
     def get_clients(self):
-        return self.client.all()
+        return self.clients.all().filter(active=True)
 
 
 class Client(models.Model):
@@ -25,11 +25,15 @@ class Client(models.Model):
     email = models.CharField('Email', max_length=100, null=True, blank=True)
     inn = models.IntegerField('ИНН')
     comment = models.TextField('Комментарий', null=True, blank=True)
-    manager = models.ForeignKey(Manager, on_delete=models.SET_NULL, related_name='client', null=True)
+    manager = models.ForeignKey(Manager, on_delete=models.SET_NULL, related_name='clients', null=True)
     active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.organization_name
+
+    def kill(self):
+        self.active = False
+        self.save(update_fields=['active'])
 
     @staticmethod
     def save_client(post):

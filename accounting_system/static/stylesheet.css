@@ -186,7 +186,7 @@ h3{margin: 2px 0;}
 .manager-container{
     display: flex;
     justify-content: space-between;
-    height: 95px;
+    height: 90px;
     padding: 0 0 0 20px;
     margin: 0 20px 10px 20px;
     color: #2d353d;
@@ -346,7 +346,7 @@ h3{margin: 2px 0;}
 }
 
 .manager-delete-button{
-    width: 100px;
+    width: 90px;
     height: 100%;
     border: none;
     border-left: 2px solid #2d353d;
@@ -378,10 +378,12 @@ h3{margin: 2px 0;}
 .delete-button-delete_manager:hover{
     letter-spacing: 1px;
     cursor: pointer;
+    color: #c40d0d;
+    border: 2px solid #c40d0d;;
 }
 
 .client-add-service-button{
-    width: 160px;
+    width: 90px;
     height: 100%;
     border: none;
     border-left: 2px solid #2d353d;

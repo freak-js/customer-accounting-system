@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import logout
 from .forms import CustomUserCreationForm
 from .models import Manager, Client
@@ -38,20 +39,21 @@ def delete_client(request):
         client = get_object_or_404(Client, pk=client_pk)
         client.kill()
         return redirect('clients')
-    client_pk = request.POST.get('manager_pk')
+    client_pk = request.POST.get('client_pk')
     client = get_object_or_404(Manager, pk=client_pk)
-    context = {'page': 'staff', 'manager_name': str(request.user), 'client': client}
+    context = {'page': 'clients', 'manager_name': str(request.user), 'client': client, 'manager': request.user}
     return render(request, 'accounting_system/delete_client.html', context)
 
 
 @login_required
 def staff(request):
     managers = Manager.objects.all().filter(is_active=True)
-    context = {'page': 'staff', 'manager_name': str(request.user), 'managers': managers}
+    context = {'page': 'staff', 'manager_name': str(request.user), 'managers': managers, 'manager': request.user}
     return render(request, 'accounting_system/staff.html', context)
 
 
 @login_required
+@staff_member_required
 def add_manager(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
@@ -60,11 +62,12 @@ def add_manager(request):
             return redirect('staff')
     else:
         form = CustomUserCreationForm
-    context = {'page': 'staff', 'manager_name': str(request.user), 'form': form}
+    context = {'page': 'staff', 'manager_name': str(request.user), 'form': form, 'manager': request.user}
     return render(request, 'accounting_system/add_manager.html', context)
 
 
 @login_required
+@staff_member_required
 def delete_manager(request):
     if manager_pk := request.POST.get('manager_pk_for_delete'):
         manager = get_object_or_404(Manager, pk=manager_pk)
@@ -78,19 +81,19 @@ def delete_manager(request):
 
 @login_required
 def tasks(request):
-    context = {'page': 'tasks', 'manager_name': str(request.user)}
+    context = {'page': 'tasks', 'manager_name': str(request.user), 'manager': request.user}
     return render(request, 'accounting_system/tasks.html', context)
 
 
 @login_required
 def calendar(request):
-    context = {'page': 'calendar', 'manager_name': str(request.user)}
+    context = {'page': 'calendar', 'manager_name': str(request.user), 'manager': request.user}
     return render(request, 'accounting_system/calendar.html', context)
 
 
 @login_required
 def service(request):
-    context = {'page': 'service', 'manager_name': str(request.user)}
+    context = {'page': 'service', 'manager_name': str(request.user), 'manager': request.user}
     return render(request, 'accounting_system/service.html', context)
 
 
