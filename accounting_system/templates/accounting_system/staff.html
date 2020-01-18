@@ -43,17 +43,29 @@
 
                     </div>
 
-                    <form action="/delete-manager/" method="post">
+                    <div class="d-flex">
 
-                        {% csrf_token %}
+                        <form action="/change-manager-form/" method="post">
+
+                            {% csrf_token %}
+
+                            <button class="manager-delete-button" name="manager_pk" value="{{ manager.pk }}">изменить</button>
+
+                        </form>
 
                         {% if not manager.is_staff  %}
 
-                            <button class="manager-delete-button" name="manager_pk" value="{{ manager.pk }}">удалить</button>
+                            <form action="/delete-manager/" method="post">
+
+                                {% csrf_token %}
+
+                                <button class="manager-delete-button" name="manager_pk" value="{{ manager.pk }}">удалить</button>
+
+                            </form>
 
                         {% endif %}
 
-                    </form>
+                    </div>
 
                 </div>
 

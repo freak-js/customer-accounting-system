@@ -127,7 +127,7 @@
 
                         <select name="manager" required id="id_manager">
 
-                            {% if manager.is_staff %}
+                            {% if user.is_staff %}
 
                                 {% for manager in managers %}
 

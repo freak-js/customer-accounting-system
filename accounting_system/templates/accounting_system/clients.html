@@ -35,7 +35,7 @@
 
                             <span><span class="client-container-span">ИНН: </span>{{ client.inn }}</span>&nbsp;&nbsp;&nbsp;&nbsp;
 
-                            {% if manager.is_staff %}
+                            {% if user.is_staff %}
 
                                 <span><span class="client-container-span">менеджер: </span>{{ client.manager }}</span>&nbsp;&nbsp;&nbsp;&nbsp;
 
