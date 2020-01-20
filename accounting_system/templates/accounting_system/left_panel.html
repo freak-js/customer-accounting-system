@@ -20,6 +20,10 @@
 
     <a class="{% if page == 'calendar' %} left-panel-select-link {% else %} left-panel-link {% endif %}" href="/calendar/"><img class="link-img" src="{% static 'accounting_system/calendar.png' %}" alt="logo">КАЛЕНДАРЬ</a>
 
+    {% if user.is_staff %}
+    
     <a class="{% if page == 'service' %} left-panel-select-link {% else %} left-panel-link {% endif %}" href="/service/"><img class="link-img" src="{% static 'accounting_system/service.png' %}" alt="logo">УСЛУГИ</a>
+
+    {% endif %}
 
 </div>

@@ -29,9 +29,15 @@ input:focus{outline: none;}
 
 li{list-style-type: none;}
 
-h1{margin: 7px 0;}
+h1{margin: 5px 0;}
+
+h2{margin: 5px 0;}
 
 h3{margin: 2px 0;}
+
+.mb-25{
+    margin-bottom: 25px !important;
+}
 
 .h-100{
     height: 100%;
@@ -39,6 +45,10 @@ h3{margin: 2px 0;}
 
 .d-flex{
     display: flex;
+}
+
+.flex-grow-1{
+    flex-grow: 1;
 }
 
 .flex-center{
@@ -186,7 +196,7 @@ h3{margin: 2px 0;}
 .manager-container{
     display: flex;
     justify-content: space-between;
-    height: 90px;
+    height: 83px;
     padding: 0 0 0 20px;
     margin: 0 20px 10px 20px;
     color: #2d353d;
@@ -267,7 +277,7 @@ h3{margin: 2px 0;}
     padding: 3px 10px;
 }
 
-.add-client-form select{
+.add-client-form > div > select{
     background: white;
     min-width: 239px;
     height: 35px;
@@ -288,6 +298,49 @@ h3{margin: 2px 0;}
     border: 2px solid;
     border-radius: 15px;
 }
+
+.service-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 150px;
+    width: 210px;
+    color: #2d353d;
+    border: 3px solid #2d353d;
+    border-radius: 15px;
+    margin: 15px;
+    font-weight: bold;
+    font-size: 65px;
+    transition: 500ms;
+}
+
+.service-container:hover{
+    letter-spacing: 8px;
+}
+
+.service-title-container{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 50px;
+    padding: 0 0 0 20px;
+    margin: 0 20px 10px 20px;
+    color: #2d353d;
+    border: 2px solid;
+    border-radius: 15px;
+}
+
+.datepicker-container{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 239px;
+}
+
+.datepicker-container input{
+    min-width: 205px;
+}
+
 
 /* BUTTONS */
 
@@ -489,6 +542,14 @@ h3{margin: 2px 0;}
 
 .left-panel-img{
     height: 75px;
+}
+
+.ui-datepicker-trigger{
+    margin-left: 10px;
+}
+
+.ui-datepicker-trigger:hover{
+    cursor: pointer;
 }
 
 /* TEXT */

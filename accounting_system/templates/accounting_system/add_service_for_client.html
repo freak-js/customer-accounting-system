@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    {% load static %}
+    {% include "accounting_system/links.html" %}
+    <title>Добавление ККТ</title>
+</head>
+<body>
+
+    {% include "accounting_system/header.html" %}
+
+    <div class="wrap">
+
+        {% include "accounting_system/left_panel.html" %}
+
+        <div class="right-panel-center">
+
+            <form class="flex-center-column" action="/###/" method="post">
+
+                {% csrf_token %}
+
+                <div class="add-client-form flex-center-column">
+                        
+                    <!-- КАССОВЫЙ АППАРАТ -->
+
+                    <div class="add-client-form-div mb-25">
+
+                        <div class="add-client-label-div">
+
+                            <label>Кассовый аппарат:</label>
+
+                        </div>
+
+                        <select name="cash_machine_pk" required>
+
+                            <option value="none" selected>НЕТ</option>
+
+                            {% for kkt in kkt_list %}
+
+                                <option value="{{ kkt.pk }}">{{ kkt.model }}</option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                    <!-- ЭЦП -->
+
+                    <div class="add-client-form-div">
+
+                        <div class="add-client-label-div">
+
+                            <label>ЭЦП:</label>
+
+                        </div>
+
+                        <select name="ecp_pk" required>
+
+                            <option value="none" selected>НЕТ</option>
+
+                            {% for ecp in ecp_list %}
+
+                                <option value="{{ ecp.pk }}">{{ ecp.name }}</option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                    <!-- ECP CALENDAR -->
+
+                    <div class="add-client-form-div mb-25">
+
+                        <div class="add-client-label-div">
+
+                            <label>Дата покупки ЭЦП:</label>
+
+                        </div>
+
+                        <div class="datepicker-container">
+
+                            <input type="text" name="add_ecp_date" id="add_ecp_date">
+
+                        </div>
+
+                    </div>
+
+                    <!-- OFD -->
+
+                    <div class="add-client-form-div">
+
+                        <div class="add-client-label-div">
+
+                            <label>ОФД:</label>
+
+                        </div>
+
+                        <select name="ofd_pk" required>
+
+                            <option value="none" selected>НЕТ</option>
+
+                            {% for ofd in ofd_list %}
+
+                                <option value="{{ ofd.pk }}">{{ ofd.model }}</option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                    <!-- OFD CALENDAR -->
+
+                    <div class="add-client-form-div mb-25">
+
+                        <div class="add-client-label-div">
+
+                            <label>Дата покупки ОФД:</label>
+
+                        </div>
+
+                        <div class="datepicker-container">
+
+                            <input type="text" name="add_ofd_date" id="add_ofd_date">
+
+                        </div>
+
+                    </div>
+
+                    <!-- FN -->
+
+                    <div class="add-client-form-div">
+
+                        <div class="add-client-label-div">
+
+                            <label>ФН:</label>
+
+                        </div>
+
+                        <select name="fn_pk" required>
+
+                            <option value="none" selected>НЕТ</option>
+
+                            {% for fn in fn_list %}
+
+                                <option value="{{ fn.pk }}">{{ fn.name }}</option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                    <!-- FN CALENDAR -->
+
+                    <div class="add-client-form-div mb-25">
+
+                        <div class="add-client-label-div">
+
+                            <label>Дата покупки ФН:</label>
+
+                        </div>
+
+                        <div class="datepicker-container">
+
+                            <input type="text" name="add_fn_date" id="add_fn_date">
+
+                        </div>
+
+                    </div>
+
+                    <!-- TO -->
+
+                    <div class="add-client-form-div">
+
+                        <div class="add-client-label-div">
+
+                            <label>Договор ТО:</label>
+
+                        </div>
+
+                        <select name="to_pk" required>
+
+                            <option value="none" selected>НЕТ</option>
+
+                            {% for to in to_list %}
+
+                                <option value="{{ to.pk }}">{{ to.name }}</option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                    <!-- TO CALENDAR -->
+
+                    <div class="add-client-form-div">
+
+                        <div class="add-client-label-div">
+
+                            <label>Дата оформления ТО:</label>
+
+                        </div>
+
+                        <div class="datepicker-container">
+
+                            <input type="text" name="add_to_date" id="add_to_date">
+
+                        </div>
+
+                    </div>
+
+                    <!-- END FORM -->
+
+                </div>
+
+                <button class="add-manager-button">ДОБАВИТЬ</button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <script>
+                        
+        $(function(){
+            $("#add_ecp_date").datepicker({
+                showOn: "button",
+                buttonImage: "{% static 'accounting_system/datepicker.png' %}",
+                buttonImageOnly: true,
+                buttonText: "Выбрать дату"
+            });
+        });
+
+        $(function(){
+            $("#add_ofd_date").datepicker({
+                showOn: "button",
+                buttonImage: "{% static 'accounting_system/datepicker.png' %}",
+                buttonImageOnly: true,
+                buttonText: "Выбрать дату"
+            });
+        });
+
+        $(function(){
+            $("#add_fn_date").datepicker({
+                showOn: "button",
+                buttonImage: "{% static 'accounting_system/datepicker.png' %}",
+                buttonImageOnly: true,
+                buttonText: "Выбрать дату"
+            });
+        });
+
+        $(function(){
+            $("#add_to_date").datepicker({
+                showOn: "button",
+                buttonImage: "{% static 'accounting_system/datepicker.png' %}",
+                buttonImageOnly: true,
+                buttonText: "Выбрать дату"
+            });
+        });
+
+    </script>
+
+</body>
+
+</html>

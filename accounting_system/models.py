@@ -63,6 +63,10 @@ class ECP(models.Model):
     def __str__(self):
         return self.name
 
+    def kill(self):
+        self.active = False
+        self.save(update_fields=['active'])
+
 
 class CashMachine(models.Model):
     model = models.CharField('Модель аппарата', max_length=100)
@@ -71,38 +75,54 @@ class CashMachine(models.Model):
     def __str__(self):
         return self.model
 
+    def kill(self):
+        self.active = False
+        self.save(update_fields=['active'])
+
 
 class OFD(models.Model):
     model = models.CharField('Название', max_length=100)
-    validity = models.IntegerField('Срок действия(меясцев)')
+    validity = models.IntegerField('Срок действия(месяцев)')
     active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.model
 
+    def kill(self):
+        self.active = False
+        self.save(update_fields=['active'])
+
 
 class FN(models.Model):
     name = models.CharField('Название ФН', max_length=100)
-    validity = models.IntegerField('Срок действия(меясцев)')
+    validity = models.IntegerField('Срок действия(месяцев)', default=12)
     active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
+
+    def kill(self):
+        self.active = False
+        self.save(update_fields=['active'])
 
 
 class TO(models.Model):
     name = models.CharField('Название договора', max_length=100)
-    validity = models.IntegerField('Срок действия(лет)', default=1)
+    validity = models.IntegerField('Срок действия(месяцев)', default=12)
     active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
+
+    def kill(self):
+        self.active = False
+        self.save(update_fields=['active'])
 
 
 class Service(models.Model):
     client = models.ForeignKey(Client, on_delete=models.SET_NULL, blank=True, null=True, related_name='services')
     cash_machine = models.ForeignKey(CashMachine, on_delete=models.SET_NULL, blank=True, null=True)
-    ecp = models.ForeignKey(Manager, on_delete=models.SET_NULL, blank=True, null=True)
+    ecp = models.ForeignKey(ECP, on_delete=models.SET_NULL, blank=True, null=True)
     ecp_add_date = models.DateField('Дата покупки ЭЦП')
     ecp_expiration_date = models.DateField('Дата окончания срока действия ЭЦП')
     ofd = models.ForeignKey(OFD, on_delete=models.SET_NULL, blank=True, null=True)

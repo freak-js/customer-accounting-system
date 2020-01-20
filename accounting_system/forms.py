@@ -1,7 +1,8 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.forms import ModelForm
+from django import forms
 
-from .models import Manager
+from .models import Manager, CashMachine, ECP, OFD, FN, TO, Service
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -15,7 +16,37 @@ class CustomUserCreationForm(UserCreationForm):
         self.fields['password2'].help_text = None
 
 
-class UserChangeForm(ModelForm):
+class ManagerChangeForm(ModelForm):
     class Meta:
         model = Manager
         fields = ('username', 'first_name', 'last_name')
+
+
+class CashMachineCreationForm(ModelForm):
+    class Meta:
+        model = CashMachine
+        fields = ('model',)
+
+
+class FNCreationForm(ModelForm):
+    class Meta:
+        model = FN
+        fields = ('name', 'validity')
+
+
+class TOCreationForm(ModelForm):
+    class Meta:
+        model = TO
+        fields = ('name', 'validity')
+
+
+class ECPCreationForm(ModelForm):
+    class Meta:
+        model = ECP
+        fields = ('name', 'validity')
+
+
+class OFDCreationForm(ModelForm):
+    class Meta:
+        model = OFD
+        fields = ('model', 'validity')
