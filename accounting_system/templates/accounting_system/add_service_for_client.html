@@ -15,13 +15,13 @@
 
         <div class="right-panel-center">
 
-            <form class="flex-center-column" action="/###/" method="post">
+            <form class="flex-center-column" action="/add-service-for-client/" method="post">
 
                 {% csrf_token %}
 
                 <div class="add-client-form flex-center-column">
                         
-                    <!-- КАССОВЫЙ АППАРАТ -->
+                    <!-- CASH MACHINE -->
 
                     <div class="add-client-form-div mb-25">
 
@@ -31,9 +31,9 @@
 
                         </div>
 
-                        <select name="cash_machine_pk" required>
+                        <select name="cash_machine_pk">
 
-                            <option value="none" selected>НЕТ</option>
+                            <option value="" selected>НЕТ</option>
 
                             {% for kkt in kkt_list %}
 
@@ -45,7 +45,7 @@
 
                     </div>
 
-                    <!-- ЭЦП -->
+                    <!-- ECP -->
 
                     <div class="add-client-form-div">
 
@@ -55,9 +55,9 @@
 
                         </div>
 
-                        <select name="ecp_pk" required>
+                        <select name="ecp_pk">
 
-                            <option value="none" selected>НЕТ</option>
+                            <option value="" selected>НЕТ</option>
 
                             {% for ecp in ecp_list %}
 
@@ -97,9 +97,9 @@
 
                         </div>
 
-                        <select name="ofd_pk" required>
+                        <select name="ofd_pk">
 
-                            <option value="none" selected>НЕТ</option>
+                            <option value="" selected>НЕТ</option>
 
                             {% for ofd in ofd_list %}
 
@@ -139,9 +139,9 @@
 
                         </div>
 
-                        <select name="fn_pk" required>
+                        <select name="fn_pk">
 
-                            <option value="none" selected>НЕТ</option>
+                            <option value="" selected>НЕТ</option>
 
                             {% for fn in fn_list %}
 
@@ -181,9 +181,9 @@
 
                         </div>
 
-                        <select name="to_pk" required>
+                        <select name="to_pk">
 
-                            <option value="none" selected>НЕТ</option>
+                            <option value="" selected>НЕТ</option>
 
                             {% for to in to_list %}
 
@@ -215,6 +215,8 @@
 
                     <!-- END FORM -->
 
+                    <input type="hidden" name="client_pk" value="{{ client_pk }}">
+
                 </div>
 
                 <button class="add-manager-button">ДОБАВИТЬ</button>
@@ -229,6 +231,7 @@
                         
         $(function(){
             $("#add_ecp_date").datepicker({
+                dateFormat: 'yy-mm-dd',
                 showOn: "button",
                 buttonImage: "{% static 'accounting_system/datepicker.png' %}",
                 buttonImageOnly: true,
@@ -238,6 +241,7 @@
 
         $(function(){
             $("#add_ofd_date").datepicker({
+                dateFormat: 'yy-mm-dd',
                 showOn: "button",
                 buttonImage: "{% static 'accounting_system/datepicker.png' %}",
                 buttonImageOnly: true,
@@ -247,6 +251,7 @@
 
         $(function(){
             $("#add_fn_date").datepicker({
+                dateFormat: 'yy-mm-dd',
                 showOn: "button",
                 buttonImage: "{% static 'accounting_system/datepicker.png' %}",
                 buttonImageOnly: true,
@@ -256,6 +261,7 @@
 
         $(function(){
             $("#add_to_date").datepicker({
+                dateFormat: 'yy-mm-dd',
                 showOn: "button",
                 buttonImage: "{% static 'accounting_system/datepicker.png' %}",
                 buttonImageOnly: true,

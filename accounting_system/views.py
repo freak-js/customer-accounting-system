@@ -4,10 +4,10 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import logout
-from .utils import get_service_class_instance
+from .utils import get_service_class_instance, create_service_for_client
 from .forms import (CustomUserCreationForm, ManagerChangeForm, CashMachineCreationForm, FNCreationForm,
                     TOCreationForm, ECPCreationForm, OFDCreationForm)
-from .models import Manager, Client, CashMachine, ECP, OFD, FN, TO
+from .models import Manager, Client, CashMachine, ECP, OFD, FN, TO, Service
 
 
 @login_required
@@ -34,6 +34,7 @@ def add_client(request):
     if request.method == 'POST':
         if Client.save_client(request.POST):
             return redirect('clients')
+        # TODO Добавить выведение ошибки при сохранении клиента (экран уведомлений)
     managers = Manager.objects.all().filter(is_active=True)
     context = {'page': 'clients', 'user': request.user, 'managers': managers}
     return render(request, 'accounting_system/add_client.html', context)
@@ -138,6 +139,8 @@ def service(request):
     return render(request, 'accounting_system/service.html', context)
 
 
+@login_required
+@require_POST
 def add_service_for_client_form(request):
     client_pk = request.POST.get('client_pk')
     kkt_list = CashMachine.objects.all().filter(active=True)
@@ -149,6 +152,13 @@ def add_service_for_client_form(request):
                'kkt_list': kkt_list, 'ecp_list': ecp_list, 'ofd_list': ofd_list,
                'fn_list': fn_list, 'to_list': to_list}
     return render(request, 'accounting_system/add_service_for_client.html', context)
+
+
+@login_required
+@require_POST
+def add_service_for_client(request):
+    if not create_service_for_client(request)['error']: # TODO закончить валидацию с экраном(возможно)
+        return redirect('clients')
 
 
 # KKT

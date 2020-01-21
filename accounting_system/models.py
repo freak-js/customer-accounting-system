@@ -56,8 +56,8 @@ class Client(models.Model):
 
 
 class ECP(models.Model):
-    name = models.CharField('Название ЭЦП', max_length=100, default='ЭЦП на 1 год')
-    validity = models.IntegerField('Срок действия(лет)', default=1)
+    name = models.CharField('Название ЭЦП', max_length=100)
+    validity = models.IntegerField('Срок действия(месяцев)', default=12)
     active = models.BooleanField(default=True)
 
     def __str__(self):
@@ -123,14 +123,31 @@ class Service(models.Model):
     client = models.ForeignKey(Client, on_delete=models.SET_NULL, blank=True, null=True, related_name='services')
     cash_machine = models.ForeignKey(CashMachine, on_delete=models.SET_NULL, blank=True, null=True)
     ecp = models.ForeignKey(ECP, on_delete=models.SET_NULL, blank=True, null=True)
-    ecp_add_date = models.DateField('Дата покупки ЭЦП')
-    ecp_expiration_date = models.DateField('Дата окончания срока действия ЭЦП')
+    ecp_add_date = models.DateField('Дата покупки ЭЦП', blank=True, null=True)
+    ecp_expiration_date = models.DateField('Дата окончания срока действия ЭЦП', blank=True, null=True)
     ofd = models.ForeignKey(OFD, on_delete=models.SET_NULL, blank=True, null=True)
-    ofd_add_date = models.DateField('Дата покупки ОФД')
-    ofd_expiration_date = models.DateField('Дата окончания срока действия ОФД')
+    ofd_add_date = models.DateField('Дата покупки ОФД', blank=True, null=True)
+    ofd_expiration_date = models.DateField('Дата окончания срока действия ОФД', blank=True, null=True)
     fn = models.ForeignKey(FN, on_delete=models.SET_NULL, blank=True, null=True)
-    fn_add_date = models.DateField('Дата покупки ФН')
-    fn_expiration_date = models.DateField('Дата окончания срока действия ФН')
+    fn_add_date = models.DateField('Дата покупки ФН', blank=True, null=True)
+    fn_expiration_date = models.DateField('Дата окончания срока действия ФН', blank=True, null=True)
     to = models.ForeignKey(TO, on_delete=models.SET_NULL, blank=True, null=True)
-    to_add_date = models.DateField('Дата заключения договора на ТО аппарата')
-    to_expiration_date = models.DateField('Дата окончания срока договора на ТО аппарата')
+    to_add_date = models.DateField('Дата заключения договора на ТО аппарата', blank=True, null=True)
+    to_expiration_date = models.DateField('Дата окончания срока договора на ТО аппарата', blank=True, null=True)
+    active = models.BooleanField(default=True)
+
+
+    @staticmethod
+    def validate_pk_in_form(request) -> bool:
+        cash_machine_pk = request.POST.get('cash_machine_pk')
+        ecp_pk = request.POST.get('ecp_pk')
+        ofd_pk = request.POST.get('ofd_pk')
+        fn_pk = request.POST.get('fn_pk')
+        to_pk = request.POST.get('to_pk')
+
+        if cash_machine_pk and ecp_pk:
+            return False
+        elif ecp_pk and any([ofd_pk, fn_pk, to_pk]):
+            return False
+        else:
+            return True
