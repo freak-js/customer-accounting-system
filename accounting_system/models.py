@@ -31,6 +31,23 @@ class Client(models.Model):
     def __str__(self):
         return self.organization_name
 
+    def get_count_active_services(self):
+        active_services = self.services.all().filter(active=True)
+        counter = 0
+        for service in active_services:
+            if service.ecp:
+                counter += 1
+            if service.ofd:
+                counter += 1
+            if service.fn:
+                counter += 1
+            if service.to:
+                counter += 1
+        return counter
+
+    def get_services(self):
+        return self.services.all().filter(active=True)
+
     def kill(self):
         self.active = False
         self.save(update_fields=['active'])
@@ -122,6 +139,7 @@ class TO(models.Model):
 class Service(models.Model):
     client = models.ForeignKey(Client, on_delete=models.SET_NULL, blank=True, null=True, related_name='services')
     cash_machine = models.ForeignKey(CashMachine, on_delete=models.SET_NULL, blank=True, null=True)
+    factory_number = models.CharField('Заводской номер', max_length=50, null=True, blank=True)
     ecp = models.ForeignKey(ECP, on_delete=models.SET_NULL, blank=True, null=True)
     ecp_add_date = models.DateField('Дата покупки ЭЦП', blank=True, null=True)
     ecp_expiration_date = models.DateField('Дата окончания срока действия ЭЦП', blank=True, null=True)
@@ -135,19 +153,3 @@ class Service(models.Model):
     to_add_date = models.DateField('Дата заключения договора на ТО аппарата', blank=True, null=True)
     to_expiration_date = models.DateField('Дата окончания срока договора на ТО аппарата', blank=True, null=True)
     active = models.BooleanField(default=True)
-
-
-    @staticmethod
-    def validate_pk_in_form(request) -> bool:
-        cash_machine_pk = request.POST.get('cash_machine_pk')
-        ecp_pk = request.POST.get('ecp_pk')
-        ofd_pk = request.POST.get('ofd_pk')
-        fn_pk = request.POST.get('fn_pk')
-        to_pk = request.POST.get('to_pk')
-
-        if cash_machine_pk and ecp_pk:
-            return False
-        elif ecp_pk and any([ofd_pk, fn_pk, to_pk]):
-            return False
-        else:
-            return True

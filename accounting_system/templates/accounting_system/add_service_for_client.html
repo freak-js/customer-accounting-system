@@ -3,9 +3,9 @@
 <head>
     {% load static %}
     {% include "accounting_system/links.html" %}
-    <title>Добавление ККТ</title>
+    <title>Добавление услуги</title>
 </head>
-<body>
+<body onload="brython()">
 
     {% include "accounting_system/header.html" %}
 
@@ -15,7 +15,7 @@
 
         <div class="right-panel-center">
 
-            <form class="flex-center-column" action="/add-service-for-client/" method="post">
+            <form class="flex-center-column" action="/add-service-for-client/" id="form" method="post">
 
                 {% csrf_token %}
 
@@ -23,7 +23,13 @@
                         
                     <!-- CASH MACHINE -->
 
-                    <div class="add-client-form-div mb-25">
+                    <div class="notice-container none" id="notice_container">
+
+                        <span class="" id="notice">Заглушка текст текст текст текст текст текст текст текст текст текст текст текст</span>
+
+                    </div>
+
+                    <div class="add-client-form-div">
 
                         <div class="add-client-label-div">
 
@@ -31,7 +37,7 @@
 
                         </div>
 
-                        <select name="cash_machine_pk">
+                        <select name="cash_machine_pk" id="cash_machine_pk">
 
                             <option value="" selected>НЕТ</option>
 
@@ -45,6 +51,24 @@
 
                     </div>
 
+                    <!-- CASHMACHINE FACTORY NUMBER -->
+
+                    <div class="add-client-form-div mb-25">
+
+                        <div class="add-client-label-div">
+
+                            <label>Заводской номер:</label>
+
+                        </div>
+
+                        <div class="datepicker-container">
+
+                            <input type="text" name="factory_number">
+
+                        </div>
+
+                    </div>
+
                     <!-- ECP -->
 
                     <div class="add-client-form-div">
@@ -55,7 +79,7 @@
 
                         </div>
 
-                        <select name="ecp_pk">
+                        <select name="ecp_pk" id="ecp_pk">
 
                             <option value="" selected>НЕТ</option>
 
@@ -75,7 +99,7 @@
 
                         <div class="add-client-label-div">
 
-                            <label>Дата покупки ЭЦП:</label>
+                            <label>Дата выпуска ЭЦП:</label>
 
                         </div>
 
@@ -97,7 +121,7 @@
 
                         </div>
 
-                        <select name="ofd_pk">
+                        <select name="ofd_pk" id="ofd_pk">
 
                             <option value="" selected>НЕТ</option>
 
@@ -117,7 +141,7 @@
 
                         <div class="add-client-label-div">
 
-                            <label>Дата покупки ОФД:</label>
+                            <label>Дата регистрации ОФД:</label>
 
                         </div>
 
@@ -139,7 +163,7 @@
 
                         </div>
 
-                        <select name="fn_pk">
+                        <select name="fn_pk" id="fn_pk">
 
                             <option value="" selected>НЕТ</option>
 
@@ -159,7 +183,7 @@
 
                         <div class="add-client-label-div">
 
-                            <label>Дата покупки ФН:</label>
+                            <label>Дата регистрации ФН:</label>
 
                         </div>
 
@@ -181,7 +205,7 @@
 
                         </div>
 
-                        <select name="to_pk">
+                        <select name="to_pk" id="to_pk">
 
                             <option value="" selected>НЕТ</option>
 
@@ -219,7 +243,7 @@
 
                 </div>
 
-                <button class="add-manager-button">ДОБАВИТЬ</button>
+                <div class="add-manager-button" id="submit_button">ДОБАВИТЬ</div>
 
             </form>
 
@@ -270,6 +294,160 @@
         });
 
     </script>
+
+    <script type="text/python">
+    
+        from browser import document
+
+        # SELECTBOX
+
+        cash_machine_pk = document['cash_machine_pk']
+        ecp_pk = document['ecp_pk']
+        ofd_pk = document['ofd_pk']
+        fn_pk = document['fn_pk']
+        to_pk = document['to_pk']
+
+        # DATE FIELD
+
+        add_ecp_date = document['add_ecp_date']
+        add_ofd_date = document['add_ofd_date']
+        add_fn_date = document['add_fn_date']
+        add_to_date = document['add_to_date']
+
+        # NOTICE
+
+        notice = document['notice']
+        notice_container = document['notice_container']
+
+        # FORM AND BUTTON
+
+        form = document['form']
+        button = document['submit_button']
+
+        # FAIL MESSAGE
+
+        CHECK_DATES_FAIL_MESSAGE = 'Вы забыли указать дату для одного из выбранных пунктов, так делать нельзя, аяяй!'
+
+        CHECK_EMPTY_FORM_FAIL_MESSAGE = 'Нельзя отправить форму не выбрав услугу. Какой вообще в этом смысл?'
+
+        CHECK_SERVICES_FAIL_MESSAGE = 'Нельзя отправить форму указав дату без услуги.'
+
+
+        def check_dates() -> bool:
+            """ Проверка наличия даты при условии выбора услуги """
+            result = True
+
+            if (ecp_pk.selectedIndex and not add_ecp_date.value) or (ofd_pk.selectedIndex and not add_ofd_date.value):
+                result = False
+            elif (fn_pk.selectedIndex and not add_fn_date.value) or (fn_pk.selectedIndex and not add_fn_date.value):
+                result = False
+            return result
+
+
+        def check_empty_form() -> bool:
+            """ Проверка на пустую форму """
+            return any([cash_machine_pk.selectedIndex, ecp_pk.selectedIndex, ofd_pk.selectedIndex, 
+                        fn_pk.selectedIndex, to_pk.selectedIndex])
+
+        
+        def check_services() -> bool:
+            """ Проверка наличия услуги при условии выбора даты """
+            result = True
+
+            if (add_ecp_date.value and not ecp_pk.selectedIndex) or (add_ofd_date.value and not ofd_pk.selectedIndex):
+                result = False
+            elif (add_fn_date.value and not fn_pk.selectedIndex) or (add_to_date.value and not to_pk.selectedIndex):
+                result = False
+            return result
+
+
+        def validate_form_data(event) -> None:
+            """ Запускается при событие click по имитации кнопки  """
+            if not check_dates():
+                notice.innerHTML = CHECK_DATES_FAIL_MESSAGE
+                notice_container.classList.remove('none')
+                return
+            if not check_empty_form():
+                notice.innerHTML = CHECK_EMPTY_FORM_FAIL_MESSAGE
+                notice_container.classList.remove('none')
+                return
+            if not check_services():
+                notice.innerHTML = CHECK_SERVICES_FAIL_MESSAGE
+                notice_container.classList.remove('none')
+                return
+            form.submit()
+
+        
+        button.bind('click', validate_form_data)
+
+    </script>
+
+    <!-- <script>
+
+        // SELECTBOX
+    
+        let cash_machine_pk = document.getElementById('cash_machine_pk');
+        let ecp_pk = document.getElementById('ecp_pk');
+        let ofd_pk = document.getElementById('ofd_pk');
+        let fn_pk = document.getElementById('fn_pk');
+        let to_pk = document.getElementById('to_pk');
+
+        // CALENDAR
+
+        let add_ecp_date = document.getElementById('add_ecp_date');
+        let add_ofd_date = document.getElementById('add_ofd_date');
+        let add_fn_date = document.getElementById('add_fn_date');
+        let add_to_date = document.getElementById('add_to_date');
+
+        // NOTICE
+
+        let notice = document.getElementById('notice');
+        let notice_container = document.getElementById('notice_container');
+
+        // FORM
+
+        let form = document.getElementById('form');
+
+
+        function ValidateFormData(){
+
+            if((ecp_pk.options.selectedIndex != 0 && add_ecp_date.value == '') || (ofd_pk.options.selectedIndex != 0 && add_ofd_date.value == '') || (fn_pk.options.selectedIndex != 0 && add_fn_date.value == '') || (to_pk.options.selectedIndex != 0 && add_to_date == '')){
+
+                notice.innerHTML = 'Вы забыли указать дату для одного из выбранных пунктов, так делать нельзя, аяяй!';
+                notice_container.classList.remove('none');
+                return false;
+
+            } else if(cash_machine_pk.options.selectedIndex == 0 && ecp_pk.options.selectedIndex == 0 && ofd_pk.options.selectedIndex == 0 && fn_pk.options.selectedIndex == 0 && to_pk.options.selectedIndex == 0){
+
+                notice.innerHTML = 'Нельзя отправить форму не выбрав услугу. Какой вообще в этом смысл?';
+                notice_container.classList.remove('none');
+                return false;
+
+            } else if((add_ecp_date.value && ecp_pk.options.selectedIndex == 0) || (add_ofd_date.value && ofd_pk.options.selectedIndex == 0) || (add_fn_date.value && fn_pk.options.selectedIndex == 0) || (add_to_date.value && to_pk.options.selectedIndex == 0)){
+
+                notice.innerHTML = 'Нельзя отправить форму указав дату без услуги.';
+                notice_container.classList.remove('none');
+                return false;
+                
+            } else{
+
+                return true
+
+            }
+
+        }
+
+        function Submit(){
+
+            if(ValidateFormData()){
+
+                form.submit();
+
+            }
+
+        }
+    
+    </script> -->
 
 </body>
 

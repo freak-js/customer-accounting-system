@@ -18,6 +18,7 @@ urlpatterns = [
     path('clients/', views.clients, name='clients'),
     path('add-client/', views.add_client, name='add-client'),
     path('delete-client/', views.delete_client, name='delete-client'),
+    path('client-profile/', views.client_profile, name='client-profile'),
     # STAFF
     path('staff/', views.staff, name='staff'),
     path('add-manager/', views.add_manager, name='add-manager'),

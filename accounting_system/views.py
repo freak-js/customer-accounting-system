@@ -7,7 +7,7 @@ from django.contrib.auth import logout
 from .utils import get_service_class_instance, create_service_for_client
 from .forms import (CustomUserCreationForm, ManagerChangeForm, CashMachineCreationForm, FNCreationForm,
                     TOCreationForm, ECPCreationForm, OFDCreationForm)
-from .models import Manager, Client, CashMachine, ECP, OFD, FN, TO, Service
+from .models import Manager, Client, CashMachine, ECP, OFD, FN, TO
 
 
 @login_required
@@ -52,6 +52,15 @@ def delete_client(request):
     return render(request, 'accounting_system/delete_client.html', context)
 
 
+@login_required
+def client_profile(request):
+    client_pk = request.POST.get('client_pk')
+    client = get_object_or_404(Client, pk=client_pk)
+    client_services = client.get_services()
+    context = {'page': 'clients', 'client': client, 'user': request.user, 'client_services': client_services}
+    return render(request, 'accounting_system/client_profile.html', context)
+
+
 # STAFF
 
 
@@ -91,8 +100,8 @@ def change_manager_form(request):
 @staff_member_required
 def change_manager(request):
     manager_pk_for_change = request.POST.get('manager_pk_for_change')
-    change_manager = get_object_or_404(Manager, pk=manager_pk_for_change)
-    form = ManagerChangeForm(request.POST, instance=change_manager)
+    manager = get_object_or_404(Manager, pk=manager_pk_for_change)
+    form = ManagerChangeForm(request.POST, instance=manager)
     if form.is_valid():
         form.save()
         return redirect('staff')
@@ -157,8 +166,12 @@ def add_service_for_client_form(request):
 @login_required
 @require_POST
 def add_service_for_client(request):
-    if not create_service_for_client(request)['error']: # TODO закончить валидацию с экраном(возможно)
-        return redirect('clients')
+    create_service_for_client(request)
+    client_pk = request.POST.get('client_pk')
+    client = get_object_or_404(Client, pk=client_pk)
+    client_services = client.get_services()
+    context = {'page': 'clients', 'client': client, 'user': request.user, 'client_services': client_services}
+    return render(request, 'accounting_system/client_profile.html', context)
 
 
 # KKT

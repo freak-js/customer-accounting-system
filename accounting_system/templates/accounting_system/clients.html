@@ -17,6 +17,15 @@
 
             <div class="right-panel-header">
 
+                <!-- <form>
+
+                    <input type="text" name="serch_data">
+
+                    <button class="add-service-profile-button">ПОИСК<img class="search-img" src="{% static 'accounting_system/search.png' %}" alt="search-img"></button>
+
+
+                </form> -->
+
                 <a class="add-manager-link" href="/add-client/">ДОБАВИТЬ КЛИЕНТА</a>
 
             </div>
@@ -41,13 +50,21 @@
 
                             {% endif %}
 
-                            <span><span class="client-container-span">услуг: </span>{{ client.services.all.count }}</span>
+                            <span><span class="client-container-span">услуг: </span>{{ client.get_count_active_services }}</span>
 
                         </div>
 
                     </div>
 
                     <div class="d-flex">
+
+                        <form class="h-100" action="/client-profile/" method="post">
+
+                            {% csrf_token %}
+
+                            <button class="client-add-service-button" name="client_pk" value="{{ client.pk }}">карточка</button>
+
+                        </form>
 
                         <form class="h-100" action="/add-service-for-client-form/" method="post">
 

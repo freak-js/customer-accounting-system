@@ -1,6 +1,14 @@
 /* GLOBAL */
 
-html{height: 100%;}
+* {
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+html{height: 100%; min-width: 1080px; color: #2D353D;}
 
 body{height: 100%; margin: 0; display: flex; flex-direction: column;
     font-family: 'Oswald', sans-serif;}
@@ -35,6 +43,39 @@ h2{margin: 5px 0;}
 
 h3{margin: 2px 0;}
 
+h4{margin: 5px 0;}
+
+.fs-15{
+    font-size: 15px;
+}
+
+.fs-18{
+    font-size: 20px;
+}
+
+.mx-20{
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.my-5{
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.mb-5{
+    margin-bottom: 5px;
+}
+
+.mb-10{
+    margin-bottom: 10px;
+}
+
+.my-10{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
 .mb-25{
     margin-bottom: 25px !important;
 }
@@ -45,6 +86,11 @@ h3{margin: 2px 0;}
 
 .d-flex{
     display: flex;
+}
+
+.d-flex-ai-center{
+    display: flex;
+    align-items: center;
 }
 
 .flex-grow-1{
@@ -221,17 +267,12 @@ h3{margin: 2px 0;}
     width: 100%;
 }
 
-.add-client-form{
-    width: 420px;
-    margin-right: 185px;
-}
-
 .add-client-form-div{
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
 }
 
 .add-client-label-div{
@@ -241,9 +282,13 @@ h3{margin: 2px 0;}
     justify-content: flex-end;
 }
 
+.add-client-form{
+    width: 420px;
+    margin-right: 185px;
+}
 .add-client-form input{
     min-width: 235px;
-    height: 32px;
+    height: 29px;
     font-family: 'Oswald', sans-serif;
     font-size: 18px;
     color: #2D353D;
@@ -252,13 +297,11 @@ h3{margin: 2px 0;}
     border-radius: 10px;
     letter-spacing: 1px;
 }
-
 .add-client-form label{
     color: #2D353D;
-    font-size: 20px;
+    font-size: 19px;
     margin-right: 5px;
 }
-
 .add-client-form ul{
     margin: 10px 0;
     min-width: 235px;
@@ -268,7 +311,6 @@ h3{margin: 2px 0;}
     padding: 10px 0;
     background-color: #ed63631f;
 }
-
 .add-client-form textarea{
     min-width: 215px;
     color: #2d353d;
@@ -276,7 +318,6 @@ h3{margin: 2px 0;}
     border-radius: 10px;
     padding: 3px 10px;
 }
-
 .add-client-form > div > select{
     background: white;
     min-width: 239px;
@@ -292,6 +333,16 @@ h3{margin: 2px 0;}
     display: flex;
     justify-content: space-between;
     height: 57px;
+    padding: 0 0 0 20px;
+    margin: 0 20px 10px 20px;
+    color: #2d353d;
+    border: 2px solid;
+    border-radius: 15px;
+}
+
+.client-container-services{
+    display: flex;
+    justify-content: space-between;
     padding: 0 0 0 20px;
     margin: 0 20px 10px 20px;
     color: #2d353d;
@@ -341,6 +392,15 @@ h3{margin: 2px 0;}
     min-width: 205px;
 }
 
+.notice-container{
+    width: 330px;
+    margin: 20px 0;
+    color: #c40d0d;
+    background-color: #ed63631f;
+    text-align: center;
+    border-radius: 10px;
+    padding: 10px 0;
+}
 
 /* BUTTONS */
 
@@ -384,6 +444,9 @@ h3{margin: 2px 0;}
 .add-manager-button{
     width: 235px;
     height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin: 25px 0 10px 0;
     border: 2px solid #2D353D;
     border-radius: 10px;
@@ -416,6 +479,23 @@ h3{margin: 2px 0;}
     color: #df1818;
 }
 
+.manager-change-button{
+    width: 95px;
+    height: 100%;
+    border: none;
+    border-left: 2px solid #2d353d;
+    border-radius: 0 20px 20px 0;
+    color: #2d353d;
+    font-size: 21px;
+    background-color: #fff;
+    transition: 500ms;
+}
+
+.manager-change-button:hover{
+    letter-spacing: 1px;
+    cursor: pointer;
+}
+
 .delete-button-delete_manager{
     width: 250px;
     height: 40px;
@@ -432,7 +512,7 @@ h3{margin: 2px 0;}
     letter-spacing: 1px;
     cursor: pointer;
     color: #c40d0d;
-    border: 2px solid #c40d0d;;
+    border: 2px solid #c40d0d;
 }
 
 .client-add-service-button{
@@ -450,6 +530,26 @@ h3{margin: 2px 0;}
 .client-add-service-button:hover{
     letter-spacing: 1px;
     cursor: pointer;
+}
+
+.add-service-profile-button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 184px;
+    height: 44px;
+    color: #2d353d;
+    font-size: 16px;
+    transition: 500ms;
+    margin-right: 20px;
+    border: 2px solid;
+    border-radius: 10px;
+    background-color: white;
+}
+
+.add-service-profile-button:hover{
+    cursor: pointer;
+    letter-spacing: 1px;
 }
 
 /* LINKS */
@@ -552,10 +652,22 @@ h3{margin: 2px 0;}
     cursor: pointer;
 }
 
+.search-img{
+    width: 17px;
+    margin-left: 5px;
+}
+
 /* TEXT */
 
 .client-container-span{
     font-size: 14px;
+}
+
+.client-organization-name{
+    color: #2D353D;
+    font-size: 45px;
+    margin-left: 20px;
+    font-weight: bold;
 }
 
 /* ANIMATION */
@@ -570,4 +682,8 @@ h3{margin: 2px 0;}
 	100% {
 		background-position: 0% 50%;
 	}
+}
+
+.none{
+    display: none;
 }

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    {% load static %}
+    {% include "accounting_system/links.html" %}
+    <title>Клиенты</title>
+</head>
+<body>
+
+    {% include "accounting_system/header.html" %}
+
+    <div class="wrap">
+
+        {% include "accounting_system/left_panel.html" %}
+
+        <div class="right-panel">
+
+            <div class="right-panel-header">
+
+                <form action="/add-service-for-client-form/" method="post">
+
+                    {% csrf_token %}
+
+                    <button class="add-service-profile-button" name="client_pk" value="{{ client.pk }}">ДОБАВИТЬ УСЛУГУ</button>
+
+                </form>
+
+            </div>
+
+            <span class="client-organization-name">{{ client.organization_name }}</span>
+
+            <div class="mx-20 mb-5">
+
+                <span class="fs-18">{{ client.first_name }} {{ client.last_name }} {{ client.patronymic }}</span>
+
+            </div>
+
+            <div class="mx-20 mb-5">
+
+                <span class="fs-18">тел: {{ client.phone_number }}&nbsp;&nbsp;&nbsp;
+                                    {% if client.email %}{{ client.email }}{% endif %}&nbsp;&nbsp;&nbsp;
+                                    ИНН: {{ client.inn }}&nbsp;&nbsp;&nbsp;&nbsp;
+                                    менеджер: {{ client.manager }}
+                </span>
+
+            </div>
+
+            {% if client.comment %}
+
+                <div class="mx-20 mb-10">
+
+                    <span class="fs-15">комментарий: {{ client.comment }}</span>
+
+                </div>
+
+            {% endif %}
+
+            {% for service in client_services %}
+
+                <div class="client-container-services">
+
+                    <div class="flex-column">
+
+                        {% if service.cash_machine and not service.ecp and not service.ofd and not service.fn and not service.to %}
+
+                            <h2>{{ service.cash_machine }}</h2>
+
+                            {% if service.factory_number %}
+
+                                <span>заводской номер: {{ service.factory_number }}</span>
+
+                            {% endif %}
+
+                        {% endif %}
+
+                        {% if service.cash_machine and service.ecp or service.cash_machine and service.ofd or service.cash_machine and service.fn or service.cash_machine and service.to %}
+
+                            <h2>{{ service.cash_machine }}</h2>
+
+                            {% if service.factory_number %}
+
+                                <span>заводской номер: {{ service.factory_number }}</span>
+
+                            {% endif %}
+                        
+                            {% if service.ofd %}
+
+                                <div class="d-flex-ai-center">
+
+                                    <h4>{{ service.ofd }}</h4>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                                    <span>регистрация: {{ service.ofd_add_date }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                                    <span>окончание: {{ service.ofd_expiration_date }}</span>
+
+                                </div>
+
+                            {% endif %}
+
+                            {% if service.ecp %}
+
+                                <div class="d-flex-ai-center">
+
+                                    <h4>{{ service.ecp }}</h4>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                                    <span>регистрация: {{ service.ecp_add_date }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                                    <span>окончание: {{ service.ecp_expiration_date }}</span>
+
+                                </div>
+
+                            {% endif %}
+
+                            {% if service.fn %}
+
+                                <div class="d-flex-ai-center">
+
+                                    <h4>{{ service.fn }}</h4>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                                    <span>регистрация: {{ service.fn_add_date }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                                    <span>окончание: {{ service.fn_expiration_date }}</span>
+
+                                </div>
+
+                            {% endif %}
+
+                            {% if service.to %}
+
+                                <div class="d-flex-ai-center">
+
+                                    <h4>{{ service.to }}</h4>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                                    <span>заключение: {{ service.to_add_date }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                                    <span>окончание: {{ service.to_expiration_date }}</span>
+
+                                </div>
+
+                            {% endif %}
+
+                        {% else %}
+
+                            {% if service.ecp %}
+
+                                <div class="d-flex-ai-center">
+
+                                    <h2>{{ service.ecp }}</h2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                                    <span>регистрация: {{ service.ecp_add_date }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                                    <span>окончание: {{ service.ecp_expiration_date }}</span>
+
+                                </div>
+
+                            {% endif %}
+  
+                            {% if service.ofd %}
+
+                                <div class="d-flex-ai-center">
+
+                                    <h2>{{ service.ofd }}</h2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                                    <span>регистрация: {{ service.ofd_add_date }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                                    <span>окончание: {{ service.ofd_expiration_date }}</span>
+
+                                </div>
+
+                            {% endif %}
+
+                            {% if service.fn %}
+
+                                <div class="d-flex-ai-center">
+
+                                    <h2>{{ service.fn }}</h2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                                    <span>регистрация: {{ service.fn_add_date }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                                    <span>окончание: {{ service.fn_expiration_date }}</span>
+
+                                </div>
+
+                            {% endif %}
+
+                            {% if service.to %}
+
+                                <div class="d-flex-ai-center">
+
+                                    <h2>{{ service.to }}</h2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                                    <span>заключение: {{ service.to_add_date }}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                                    <span>окончание: {{ service.to_expiration_date }}</span>
+
+                                </div>
+
+                            {% endif %}
+
+                        {% endif %}
+
+                    </div>
+
+                    <div class="d-flex">
+
+                        <form class="h-100" action="/add-service-for-client-form/" method="post">
+
+                            {% csrf_token %}
+
+                            <button class="client-add-service-button" name="client_pk" value="{{ client.pk }}">изменить</button>
+
+                        </form>
+
+                        <form class="h-100" action="/delete-client/" method="post">
+
+                            {% csrf_token %}
+
+                            <button class="manager-delete-button" name="client_pk" value="{{ client.pk }}">удалить</button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>
