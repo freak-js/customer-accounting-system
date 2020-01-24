@@ -22,10 +22,27 @@ def auth(request):
 @login_required
 def clients(request):
     if request.user.is_staff:
-        clients = Client.objects.all().filter(active=True)[:5][::-1]
+        clients = Client.objects.filter(active=True)[::-1][:7]
+        clients_list = [client.organization_name for client in clients]
     else:
-        clients = request.user.get_clients().filter(active=True)[:5][::-1]
-    context = {'page': 'clients', 'user': request.user, 'clients': clients}
+        clients = request.user.get_clients().filter(active=True)[::-1][:7]
+        clients_list = [client.organization_name for client in clients]
+    context = {'page': 'clients', 'user': request.user, 'clients': clients, 'clients_list': str(clients_list)}
+    return render(request, 'accounting_system/clients.html', context)
+
+
+@login_required
+def filter_clients(request):
+    organization_name = request.POST.get('search_data')
+    if request.user.is_staff:
+        clients = Client.objects.filter(organization_name=organization_name)
+        not_filter_clients = Client.objects.filter(active=True)
+        clients_list = [client.organization_name for client in not_filter_clients]
+    else:
+        clients = request.user.get_clients().filter(organization_name=organization_name)
+        not_filter_clients = request.user.get_clients().filter(active=True)
+        clients_list = [client.organization_name for client in not_filter_clients]
+    context = {'page': 'clients', 'user': request.user, 'clients': clients, 'clients_list': str(clients_list)}
     return render(request, 'accounting_system/clients.html', context)
 
 
@@ -167,11 +184,7 @@ def add_service_for_client_form(request):
 @require_POST
 def add_service_for_client(request):
     create_service_for_client(request)
-    client_pk = request.POST.get('client_pk')
-    client = get_object_or_404(Client, pk=client_pk)
-    client_services = client.get_services()
-    context = {'page': 'clients', 'client': client, 'user': request.user, 'client_services': client_services}
-    return render(request, 'accounting_system/client_profile.html', context)
+    return redirect('clients')
 
 
 # KKT

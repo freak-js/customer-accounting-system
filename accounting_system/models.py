@@ -35,14 +35,10 @@ class Client(models.Model):
         active_services = self.services.all().filter(active=True)
         counter = 0
         for service in active_services:
-            if service.ecp:
-                counter += 1
-            if service.ofd:
-                counter += 1
-            if service.fn:
-                counter += 1
-            if service.to:
-                counter += 1
+            if service.ecp: counter += 1
+            if service.ofd: counter += 1
+            if service.fn: counter += 1
+            if service.to: counter += 1
         return counter
 
     def get_services(self):

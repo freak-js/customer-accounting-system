@@ -5,7 +5,7 @@
     {% include "accounting_system/links.html" %}
     <title>Клиенты</title>
 </head>
-<body>
+<body onload="brython()">
 
     {% include "accounting_system/header.html" %}
 
@@ -17,14 +17,25 @@
 
             <div class="right-panel-header">
 
-                <!-- <form>
+                <form class="w-100" method="POST" action="/filter-clients/">
 
-                    <input type="text" name="serch_data">
+                    {% csrf_token %}
 
-                    <button class="add-service-profile-button">ПОИСК<img class="search-img" src="{% static 'accounting_system/search.png' %}" alt="search-img"></button>
+                    <div class="flex-center search-container">
 
+                        <div>
 
-                </form> -->
+                            <input class="search-input" type="text" name="search_data" id="search_data">
+
+                            <ul class="search-machine" id="ul"></ul>
+
+                        </div>
+
+                        <button class="add-service-profile-button">ПОИСК<img class="search-img" src="{% static 'accounting_system/search.png' %}" alt="search-img"></button>
+
+                    </div>
+
+                </form>
 
                 <a class="add-manager-link" href="/add-client/">ДОБАВИТЬ КЛИЕНТА</a>
 
@@ -91,6 +102,39 @@
         </div>
 
     </div>
+
+    <input type="hidden" value='{{ clients_list }}' id="clients_list">
+
+    <script type="text/python">
+
+        from browser import document
+        from browser.html import LI
+
+
+        search_data = document['search_data']
+        ul = document['ul']
+        clients_list = document['clients_list'].value
+        data = clients_list[1:len(clients_list) - 1].split(', ')
+
+
+        def set_value_in_input(event) -> None:
+            search_data.value = event.target.text
+            ul.clear()
+
+
+        def get_matches(event) -> None:
+            ul.clear()
+            input_text: str = search_data.value.lower()
+            matches_list: list = [i for i in data if input_text in i.lower() and input_text != ''][:5]
+            
+            for match in matches_list:
+                ul <= LI(f'{match[1:len(match) - 1]}').bind('click', set_value_in_input)
+            
+
+
+        search_data.bind('input', get_matches)
+    
+    </script>
 
 </body>
 

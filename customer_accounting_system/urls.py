@@ -19,6 +19,7 @@ urlpatterns = [
     path('add-client/', views.add_client, name='add-client'),
     path('delete-client/', views.delete_client, name='delete-client'),
     path('client-profile/', views.client_profile, name='client-profile'),
+    path('filter-clients/', views.filter_clients, name='filter-clients'),
     # STAFF
     path('staff/', views.staff, name='staff'),
     path('add-manager/', views.add_manager, name='add-manager'),

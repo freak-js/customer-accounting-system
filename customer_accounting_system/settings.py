@@ -117,3 +117,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 LOGIN_REDIRECT_URL = '/tasks/'
 
 LOGIN_URL = '/login/'
+
+# Session age settings
+
+SESSION_COOKIE_AGE = 34200
