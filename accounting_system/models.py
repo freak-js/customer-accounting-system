@@ -4,6 +4,7 @@ from django.contrib.auth.models import AbstractUser
 
 class Manager(AbstractUser):
     username = models.CharField(verbose_name='Логин', max_length=150, unique=True)
+    objects = models.Manager()
 
     def __str__(self):
         return self.first_name + ' ' + self.last_name
@@ -27,6 +28,7 @@ class Client(models.Model):
     comment = models.TextField('Комментарий', null=True, blank=True)
     manager = models.ForeignKey(Manager, on_delete=models.SET_NULL, related_name='clients', null=True)
     active = models.BooleanField(default=True)
+    objects = models.Manager()
 
     def __str__(self):
         return self.organization_name
@@ -72,6 +74,7 @@ class ECP(models.Model):
     name = models.CharField('Название ЭЦП', max_length=100)
     validity = models.IntegerField('Срок действия(месяцев)', default=12)
     active = models.BooleanField(default=True)
+    objects = models.Manager()
 
     def __str__(self):
         return self.name
@@ -84,6 +87,7 @@ class ECP(models.Model):
 class CashMachine(models.Model):
     model = models.CharField('Модель аппарата', max_length=100)
     active = models.BooleanField(default=True)
+    objects = models.Manager()
 
     def __str__(self):
         return self.model
@@ -97,6 +101,7 @@ class OFD(models.Model):
     model = models.CharField('Название', max_length=100)
     validity = models.IntegerField('Срок действия(месяцев)')
     active = models.BooleanField(default=True)
+    objects = models.Manager()
 
     def __str__(self):
         return self.model
@@ -110,6 +115,7 @@ class FN(models.Model):
     name = models.CharField('Название ФН', max_length=100)
     validity = models.IntegerField('Срок действия(месяцев)', default=12)
     active = models.BooleanField(default=True)
+    objects = models.Manager()
 
     def __str__(self):
         return self.name
@@ -123,6 +129,7 @@ class TO(models.Model):
     name = models.CharField('Название договора', max_length=100)
     validity = models.IntegerField('Срок действия(месяцев)', default=12)
     active = models.BooleanField(default=True)
+    objects = models.Manager()
 
     def __str__(self):
         return self.name
@@ -149,3 +156,4 @@ class Service(models.Model):
     to_add_date = models.DateField('Дата заключения договора на ТО аппарата', blank=True, null=True)
     to_expiration_date = models.DateField('Дата окончания срока договора на ТО аппарата', blank=True, null=True)
     active = models.BooleanField(default=True)
+    objects = models.Manager()

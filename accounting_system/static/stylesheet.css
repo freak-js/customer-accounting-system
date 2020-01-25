@@ -572,8 +572,8 @@ h4{margin: 5px 0;}
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 95px;
-    margin-left: 15px;
+    min-width: 184px;
+    margin-right: 20px;
     height: 44px;
     color: #2d353d;
     font-size: 16px;
@@ -584,6 +584,26 @@ h4{margin: 5px 0;}
 }
 
 .add-service-profile-button:hover{
+    cursor: pointer;
+    letter-spacing: 1px;
+}
+
+.search-client-button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 95px;
+    margin-left: 15px;
+    height: 44px;
+    color: #2d353d;
+    font-size: 16px;
+    transition: 500ms;
+    border: 2px solid;
+    border-radius: 10px;
+    background-color: white;
+}
+
+.search-client-button:hover{
     cursor: pointer;
     letter-spacing: 1px;
 }
