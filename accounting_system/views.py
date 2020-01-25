@@ -24,10 +24,10 @@ def auth(request: HttpRequest) -> HttpResponse:
 @login_required
 def clients(request: HttpRequest) -> HttpResponse:
     if request.user.is_staff:
-        clients_queryset = Client.objects.filter(active=True)[::-1][:7]  # TODO переделать с сортировкой по id
+        clients_queryset = Client.objects.filter(active=True).order_by('-id')[:7]
         clients_list: list = [client.organization_name for client in clients_queryset]
     else:
-        clients_queryset = request.user.get_clients().filter(active=True)[::-1][:7]  # TODO с сортировкой по id
+        clients_queryset = request.user.get_clients().filter(active=True).order_by('-id')[:7]
         clients_list: list = [client.organization_name for client in clients_queryset]
     context: dict = {'page': 'clients', 'user': request.user, 'clients': clients_queryset,
                      'clients_list': str(clients_list)}
