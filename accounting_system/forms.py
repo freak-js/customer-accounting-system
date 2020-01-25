@@ -1,8 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.forms import ModelForm
-from django import forms
 
-from .models import Manager, CashMachine, ECP, OFD, FN, TO, Service
+from .models import Manager, CashMachine, ECP, OFD, FN, TO
 
 
 class CustomUserCreationForm(UserCreationForm):
