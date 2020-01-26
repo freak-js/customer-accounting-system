@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import logout
-from .utils import get_service_class_instance, create_service_for_client
+from .utils import get_service_class_instance, create_service_for_client, get_data_to_find_matches
 from .forms import (CustomUserCreationForm, ManagerChangeForm, CashMachineCreationForm, FNCreationForm,
                     TOCreationForm, ECPCreationForm, OFDCreationForm)
 from .models import Manager, Client, CashMachine, ECP, OFD, FN, TO
@@ -34,13 +34,13 @@ def logout_view(request: HttpRequest) -> HttpResponse:
 def clients(request: HttpRequest) -> HttpResponse:
     """ Контроллер со списком клиентов и живым регистронезависимым поиском. """
     if request.user.is_staff:
-        clients_queryset = Client.objects.filter(active=True).order_by('-id')[:7]
-        clients_list: list = [client.organization_name for client in clients_queryset]
+        clients_queryset = Client.objects.filter(active=True).order_by('-id')
+        data_to_find_matches: list = get_data_to_find_matches(clients_queryset)
     else:
-        clients_queryset = request.user.get_clients().filter(active=True).order_by('-id')[:7]
-        clients_list: list = [client.organization_name for client in clients_queryset]
-    context: dict = {'page': 'clients', 'user': request.user, 'clients': clients_queryset,
-                     'clients_list': str(clients_list)}
+        clients_queryset = request.user.get_clients().filter(active=True).order_by('-id')
+        data_to_find_matches: list = get_data_to_find_matches(clients_queryset)
+    context: dict = {'page': 'clients', 'user': request.user, 'clients': clients_queryset[:10],
+                     'data_to_find_matches': str(data_to_find_matches)}
     return render(request, 'accounting_system/clients/clients.html', context)
 
 
@@ -48,17 +48,17 @@ def clients(request: HttpRequest) -> HttpResponse:
 def filter_clients(request: HttpRequest) -> HttpResponse:
     """ Контроллер с отфильтрованным списком клиентов по данным полученным из clients.
         Мимикрирует под clients с сохранением функционала. """
-    organization_name: str = request.POST.get('search_data')
+    organization_name: str = request.POST.get('search_input')
     if request.user.is_staff:
         clients_queryset = Client.objects.filter(organization_name=organization_name)
         not_filter_clients = Client.objects.filter(active=True)
-        clients_list: list = [client.organization_name for client in not_filter_clients]
+        data_to_find_matches: list = get_data_to_find_matches(not_filter_clients)
     else:
         clients_queryset = request.user.get_clients().filter(organization_name=organization_name)
         not_filter_clients = request.user.get_clients().filter(active=True)
-        clients_list: list = [client.organization_name for client in not_filter_clients]
+        data_to_find_matches: list = get_data_to_find_matches(not_filter_clients)
     context: dict = {'page': 'clients', 'user': request.user, 'clients': clients_queryset,
-                     'clients_list': str(clients_list)}
+                     'data_to_find_matches': str(data_to_find_matches)}
     return render(request, 'accounting_system/clients/clients.html', context)
 
 

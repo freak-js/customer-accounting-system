@@ -142,3 +142,13 @@ def get_expiration_date(service_pk: str, service_type: str, add_date: str) -> da
     year: int = int(add_date[0:4])
     datetime_add_date: datetime = datetime.date(year, month, day)
     return datetime_add_date + relativedelta(months=validity)
+
+
+def get_data_to_find_matches(clients_queryset) -> list:
+    """ Функция формирования списка из данных для поиска совпадений на странице clients. """
+    data_to_find_matches: list = []
+    for client in clients_queryset:
+        data_to_find_matches.append(client.organization_name)
+        data_to_find_matches.append(client.phone_number)
+        data_to_find_matches.append(str(client.inn))
+    return data_to_find_matches
