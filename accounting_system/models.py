@@ -158,3 +158,7 @@ class Service(models.Model):
     to_expiration_date = models.DateField('Дата окончания срока договора на ТО аппарата', blank=True, null=True)
     active = models.BooleanField(default=True)
     objects = models.Manager()
+
+    def kill(self):
+        self.active = False
+        self.save(update_fields=['active'])

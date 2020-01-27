@@ -58,6 +58,38 @@ def save_service_with_cash_machine(request: HttpRequest) -> None:
     service.save()
 
 
+def make_changes_to_the_service(request: HttpRequest) -> None:
+    p: dict = request.POST
+    cash_machine_pk: str = p.get('cash_machine_pk')
+    ecp_pk: str = p.get('ecp_pk')
+    ofd_pk: str = p.get('ofd_pk')
+    fn_pk: str = p.get('fn_pk')
+    to_pk: str = p.get('to_pk')
+    service = Service.objects.get(pk=p.get('service_pk'))
+
+    service.cash_machine = CashMachine.objects.get(pk=cash_machine_pk) if cash_machine_pk else None
+    service.factory_number = p.get('factory_number')
+
+    service.ecp = ECP.objects.get(pk=ecp_pk) if ecp_pk else None
+    service.ecp_add_date = p.get('add_ecp_date') if p.get('add_ecp_date') else None
+    service.ecp_expiration_date = get_expiration_date(ecp_pk, 'ecp',
+                                                      service.ecp_add_date) if service.ecp_add_date else None
+
+    service.ofd = OFD.objects.get(pk=ofd_pk) if ofd_pk else None
+    service.ofd_add_date = p.get('add_ofd_date') if p.get('add_ofd_date') else None
+    service.ofd_expiration_date = get_expiration_date(ofd_pk, 'ofd',
+                                                      service.ofd_add_date) if service.ofd_add_date else None
+
+    service.fn = FN.objects.get(pk=fn_pk) if fn_pk else None
+    service.fn_add_date = p.get('add_fn_date') if p.get('add_fn_date') else None
+    service.fn_expiration_date = get_expiration_date(fn_pk, 'fn', service.fn_add_date) if service.fn_add_date else None
+
+    service.to = TO.objects.get(pk=to_pk) if to_pk else None
+    service.to_add_date = p.get('add_to_date') if p.get('add_to_date') else None
+    service.to_expiration_date = get_expiration_date(to_pk, 'to', service.to_add_date) if service.to_add_date else None
+    service.save()
+
+
 def save_service_without_cash_machine(request: HttpRequest) -> None:
     """ Функция сохранения услуги БЕЗ кассы. """
     client_pk: str = request.POST.get('client_pk')
@@ -152,3 +184,12 @@ def get_data_to_find_matches(clients_queryset) -> list:
         data_to_find_matches.append(client.phone_number)
         data_to_find_matches.append(str(client.inn))
     return data_to_find_matches
+
+
+def get_client_profile_context(request: HttpRequest) -> dict:
+    client_pk: str = request.POST.get('client_pk')
+    client: Client = Client.objects.get(pk=client_pk)
+    client_services = client.get_services()
+    context: dict = {'page': 'clients', 'client': client, 'user': request.user,
+                     'client_services': client_services, 'client_pk': client_pk}
+    return context

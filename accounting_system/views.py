@@ -5,10 +5,11 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import logout
-from .utils import get_service_class_instance, create_service_for_client, get_data_to_find_matches
+from .utils import (get_service_class_instance, create_service_for_client, get_data_to_find_matches,
+                    make_changes_to_the_service, get_client_profile_context)
 from .forms import (CustomUserCreationForm, ManagerChangeForm, CashMachineCreationForm, FNCreationForm,
                     TOCreationForm, ECPCreationForm, OFDCreationForm)
-from .models import Manager, Client, CashMachine, ECP, OFD, FN, TO
+from .models import Manager, Client, CashMachine, ECP, OFD, FN, TO, Service
 from typing import Union
 
 
@@ -90,10 +91,7 @@ def delete_client(request: HttpRequest) -> HttpResponse:
 @login_required
 def client_profile(request: HttpRequest) -> HttpResponse:
     """ Контроллер профиля клиента. Отображает список услуг присвоенных клиенту. """
-    client_pk: str = request.POST.get('client_pk')
-    client: Client = get_object_or_404(Client, pk=client_pk)
-    client_services = client.get_services()
-    context: dict = {'page': 'clients', 'client': client, 'user': request.user, 'client_services': client_services}
+    context = get_client_profile_context(request)
     return render(request, 'accounting_system/clients/client_profile.html', context)
 
 
@@ -237,6 +235,44 @@ def delete_service(request: HttpRequest) -> HttpResponse:
     service_object: Union[ECP, OFD, FN, TO] = get_object_or_404(service_class_instance, pk=service_pk)
     service_object.kill()
     return redirect(back_path)
+
+
+@login_required
+@require_POST
+def delete_service_from_client(request: HttpRequest) -> HttpResponse:
+    """ Контроллер удаления улуги присвоенной клиенту. """
+    client_pk: str = request.POST.get('client_pk')
+    if service_pk := request.POST.get('service_pk_for_delete'):
+        service: Service = get_object_or_404(Service, pk=service_pk)
+        service.kill()
+        context = get_client_profile_context(request)
+        return render(request, 'accounting_system/clients/client_profile.html', context)
+    service_pk: str = request.POST.get('service_pk')
+    context: dict = {'page': 'clients', 'user': request.user, 'service_pk': service_pk, 'client_pk': client_pk}
+    return render(request, 'accounting_system/services/delete_service_from_client.html', context)
+
+
+def change_service_for_client_form(request: HttpRequest) -> HttpResponse:
+    """ Контроллер изменения услуги присвоенной клиенту """
+    client_pk: str = request.POST.get('client_pk')
+    service_pk: str = request.POST.get('service_pk')
+    service: Service = get_object_or_404(Service, pk=service_pk)
+    kkt_list = CashMachine.objects.filter(active=True)
+    ecp_list = ECP.objects.filter(active=True)
+    ofd_list = OFD.objects.filter(active=True)
+    fn_list = FN.objects.filter(active=True)
+    to_list = TO.objects.filter(active=True)
+    context: dict = {'page': 'clients', 'user': request.user, 'service': service, 'kkt_list': kkt_list,
+                     'ecp_list': ecp_list, 'ofd_list': ofd_list, 'fn_list': fn_list, 'to_list': to_list,
+                     'client_pk': client_pk}
+    return render(request, 'accounting_system/services/change_service_for_client_form.html', context)
+
+
+def save_service_changes(request: HttpRequest) -> HttpResponse:
+    """ Контроллер сохранения изменений в услуге. """
+    make_changes_to_the_service(request)
+    context = get_client_profile_context(request)
+    return render(request, 'accounting_system/clients/client_profile.html', context)
 
 
 # KKT

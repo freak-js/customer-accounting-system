@@ -35,6 +35,10 @@ urlpatterns = [
     path('delete-service/', views.delete_service, name='delete-service'),
     path('add-service-for-client-form/', views.add_service_for_client_form, name='add-service-for-client-form'),
     path('add-service-for-client/', views.add_service_for_client, name='add-service-for-client'),
+    path('delete-service-from-client/', views.delete_service_from_client, name='delete-service-from-client'),
+    path('change-service-for-client-form/', views.change_service_for_client_form,
+         name='change-service-for-client-form'),
+    path('save-service-changes/', views.save_service_changes, name='save-service-changes'),
     # KKT
     path('kkt-service/', views.kkt_service, name='kkt-service'),
     path('add-kkt/', views.add_kkt, name='add-kkt'),
