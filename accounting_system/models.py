@@ -7,6 +7,8 @@ class Manager(AbstractUser):
     username = models.CharField(verbose_name='Логин', max_length=150, unique=True)
     objects = UserManager()
 
+    REQUIRED_FIELDS = ['first_name', 'last_name', 'email']
+
     def __str__(self):
         return self.first_name + ' ' + self.last_name
 
@@ -144,18 +146,31 @@ class Service(models.Model):
     client = models.ForeignKey(Client, on_delete=models.SET_NULL, blank=True, null=True, related_name='services')
     cash_machine = models.ForeignKey(CashMachine, on_delete=models.SET_NULL, blank=True, null=True)
     factory_number = models.CharField('Заводской номер', max_length=50, null=True, blank=True)
+
     ecp = models.ForeignKey(ECP, on_delete=models.SET_NULL, blank=True, null=True)
     ecp_add_date = models.DateField('Дата покупки ЭЦП', blank=True, null=True)
     ecp_expiration_date = models.DateField('Дата окончания срока действия ЭЦП', blank=True, null=True)
+    ecp_status = models.CharField('Статус', max_length=2, null=True, blank=True)
+    ecp_days_to_finish = models.IntegerField('Дней до кончания действия услуги', blank=True, null=True)
+
     ofd = models.ForeignKey(OFD, on_delete=models.SET_NULL, blank=True, null=True)
     ofd_add_date = models.DateField('Дата покупки ОФД', blank=True, null=True)
     ofd_expiration_date = models.DateField('Дата окончания срока действия ОФД', blank=True, null=True)
+    ofd_status = models.CharField('Статус', max_length=2, null=True, blank=True)
+    ofd_days_to_finish = models.IntegerField('Дней до кончания действия услуги', blank=True, null=True)
+
     fn = models.ForeignKey(FN, on_delete=models.SET_NULL, blank=True, null=True)
     fn_add_date = models.DateField('Дата покупки ФН', blank=True, null=True)
     fn_expiration_date = models.DateField('Дата окончания срока действия ФН', blank=True, null=True)
+    fn_status = models.CharField('Статус', max_length=2, null=True, blank=True)
+    fn_days_to_finish = models.IntegerField('Дней до кончания действия услуги', blank=True, null=True)
+
     to = models.ForeignKey(TO, on_delete=models.SET_NULL, blank=True, null=True)
     to_add_date = models.DateField('Дата заключения договора на ТО аппарата', blank=True, null=True)
     to_expiration_date = models.DateField('Дата окончания срока договора на ТО аппарата', blank=True, null=True)
+    to_status = models.CharField('Статус', max_length=2, null=True, blank=True)
+    to_days_to_finish = models.IntegerField('Дней до кончания действия услуги', blank=True, null=True)
+
     active = models.BooleanField(default=True)
     objects = models.Manager()
 

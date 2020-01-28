@@ -171,6 +171,7 @@ def delete_manager(request: HttpRequest) -> HttpResponse:
 @login_required
 def tasks(request: HttpRequest) -> HttpResponse:
     """ Контроллер страницы с задачами пользователя.
+        Для менеджера выводит список его задач.
         Для администратора выводит список задач всех менеджеров в системе,
         включая и его собственные. """
     context: dict = {'page': 'tasks', 'user': request.user}

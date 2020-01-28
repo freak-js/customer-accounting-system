@@ -34,31 +34,44 @@ def save_service_with_cash_machine(request: HttpRequest) -> None:
     ecp: ECP = ECP.objects.get(pk=ecp_pk) if ecp_pk else None
     ecp_add_date: str = p.get('add_ecp_date') if p.get('add_ecp_date') else None
     ecp_expiration_date: datetime = get_expiration_date(ecp_pk, 'ecp', ecp_add_date) if ecp_add_date else None
+    ecp_days_to_finish: int = get_days_to_finish(ecp_expiration_date) if ecp_expiration_date else None
+    ecp_status: str = get_service_status(ecp_days_to_finish) if ecp_expiration_date else None
 
     ofd_pk: str = p.get('ofd_pk')
     ofd: OFD = OFD.objects.get(pk=ofd_pk) if ofd_pk else None
     ofd_add_date: str = p.get('add_ofd_date') if p.get('add_ofd_date') else None
     ofd_expiration_date: datetime = get_expiration_date(ofd_pk, 'ofd', ofd_add_date) if ofd_add_date else None
+    ofd_days_to_finish: int = get_days_to_finish(ofd_expiration_date) if ofd_expiration_date else None
+    ofd_status: str = get_service_status(ofd_days_to_finish) if ofd_expiration_date else None
 
     fn_pk: str = p.get('fn_pk')
     fn: FN = FN.objects.get(pk=fn_pk) if fn_pk else None
     fn_add_date: str = p.get('add_fn_date') if p.get('add_fn_date') else None
     fn_expiration_date: datetime = get_expiration_date(fn_pk, 'fn', fn_add_date) if fn_add_date else None
+    fn_days_to_finish: int = get_days_to_finish(fn_expiration_date) if fn_expiration_date else None
+    fn_status: str = get_service_status(fn_days_to_finish) if fn_expiration_date else None
 
     to_pk: str = p.get('to_pk')
     to: TO = TO.objects.get(pk=to_pk) if to_pk else None
     to_add_date: str = p.get('add_to_date') if p.get('add_to_date') else None
     to_expiration_date: datetime = get_expiration_date(to_pk, 'to', to_add_date) if to_add_date else None
+    to_days_to_finish: int = get_days_to_finish(to_expiration_date) if to_expiration_date else None
+    to_status: str = get_service_status(to_days_to_finish) if to_expiration_date else None
 
     service: Service = Service(client=client, cash_machine=cash_machine, factory_number=factory_number,
                                ecp=ecp, ecp_add_date=ecp_add_date, ecp_expiration_date=ecp_expiration_date,
+                               ecp_days_to_finish=ecp_days_to_finish, ecp_status=ecp_status,
                                ofd=ofd, ofd_add_date=ofd_add_date, ofd_expiration_date=ofd_expiration_date,
+                               ofd_days_to_finish=ofd_days_to_finish, ofd_status=ofd_status,
                                fn=fn, fn_add_date=fn_add_date, fn_expiration_date=fn_expiration_date,
-                               to=to, to_add_date=to_add_date, to_expiration_date=to_expiration_date)
+                               fn_days_to_finish=fn_days_to_finish, fn_status=fn_status,
+                               to=to, to_add_date=to_add_date, to_expiration_date=to_expiration_date,
+                               to_days_to_finish=to_days_to_finish, to_status=to_status, )
     service.save()
 
 
 def make_changes_to_the_service(request: HttpRequest) -> None:
+    """ Функция внесения изменений в существующую услугу для клиента. """
     p: dict = request.POST
     cash_machine_pk: str = p.get('cash_machine_pk')
     ecp_pk: str = p.get('ecp_pk')
@@ -74,19 +87,29 @@ def make_changes_to_the_service(request: HttpRequest) -> None:
     service.ecp_add_date = p.get('add_ecp_date') if p.get('add_ecp_date') else None
     service.ecp_expiration_date = get_expiration_date(ecp_pk, 'ecp',
                                                       service.ecp_add_date) if service.ecp_add_date else None
+    service.ecp_days_to_finish = get_days_to_finish(
+        service.ecp_expiration_date) if service.ecp_expiration_date else None
+    service.ecp_status = get_service_status(service.ecp_days_to_finish) if service.ecp_expiration_date else None
 
     service.ofd = OFD.objects.get(pk=ofd_pk) if ofd_pk else None
     service.ofd_add_date = p.get('add_ofd_date') if p.get('add_ofd_date') else None
     service.ofd_expiration_date = get_expiration_date(ofd_pk, 'ofd',
                                                       service.ofd_add_date) if service.ofd_add_date else None
+    service.ofd_days_to_finish = get_days_to_finish(
+        service.ofd_expiration_date) if service.ofd_expiration_date else None
+    service.ofd_status = get_service_status(service.ofd_days_to_finish) if service.ofd_expiration_date else None
 
     service.fn = FN.objects.get(pk=fn_pk) if fn_pk else None
     service.fn_add_date = p.get('add_fn_date') if p.get('add_fn_date') else None
     service.fn_expiration_date = get_expiration_date(fn_pk, 'fn', service.fn_add_date) if service.fn_add_date else None
+    service.fn_days_to_finish = get_days_to_finish(service.fn_expiration_date) if service.fn_expiration_date else None
+    service.fn_status = get_service_status(service.fn_days_to_finish) if service.fn_expiration_date else None
 
     service.to = TO.objects.get(pk=to_pk) if to_pk else None
     service.to_add_date = p.get('add_to_date') if p.get('add_to_date') else None
     service.to_expiration_date = get_expiration_date(to_pk, 'to', service.to_add_date) if service.to_add_date else None
+    service.to_days_to_finish = get_days_to_finish(service.to_expiration_date) if service.to_expiration_date else None
+    service.to_status = get_service_status(service.to_days_to_finish) if service.to_expiration_date else None
     service.save()
 
 
@@ -112,7 +135,10 @@ def save_ecp_service(client_pk: str, ecp_pk: str, ecp_add_date: str) -> None:
     client: Client = Client.objects.get(pk=client_pk)
     ecp: ECP = ECP.objects.get(pk=ecp_pk)
     ecp_expiration_date: datetime = get_expiration_date(ecp_pk, 'ecp', ecp_add_date)
-    save_service(client=client, ecp=ecp, ecp_expiration_date=ecp_expiration_date)
+    ecp_days_to_finish: int = get_days_to_finish(ecp_expiration_date)
+    ecp_status: str = get_service_status(ecp_days_to_finish)
+    save_service(client=client, ecp=ecp, ecp_expiration_date=ecp_expiration_date,
+                 ecp_days_to_finish=ecp_days_to_finish, ecp_status=ecp_status)
 
 
 def save_ofd_service(client_pk: str, ofd_pk: str, ofd_add_date: str) -> None:
@@ -120,7 +146,10 @@ def save_ofd_service(client_pk: str, ofd_pk: str, ofd_add_date: str) -> None:
     client: Client = Client.objects.get(pk=client_pk)
     ofd: OFD = OFD.objects.get(pk=ofd_pk)
     ofd_expiration_date: datetime = get_expiration_date(ofd_pk, 'ofd', ofd_add_date)
-    save_service(client=client, ofd=ofd, ofd_expiration_date=ofd_expiration_date)
+    ofd_days_to_finish: int = get_days_to_finish(ofd_expiration_date)
+    ofd_status: str = get_service_status(ofd_days_to_finish)
+    save_service(client=client, ofd=ofd, ofd_expiration_date=ofd_expiration_date,
+                 ofd_days_to_finish=ofd_days_to_finish, ofd_status=ofd_status)
 
 
 def save_fn_service(client_pk: str, fn_pk: str, fn_add_date: str) -> None:
@@ -128,7 +157,10 @@ def save_fn_service(client_pk: str, fn_pk: str, fn_add_date: str) -> None:
     client: Client = Client.objects.get(pk=client_pk)
     fn: FN = FN.objects.get(pk=fn_pk)
     fn_expiration_date: datetime = get_expiration_date(fn_pk, 'fn', fn_add_date)
-    save_service(client=client, fn=fn, fn_expiration_date=fn_expiration_date)
+    fn_days_to_finish: int = get_days_to_finish(fn_expiration_date)
+    fn_status: str = get_service_status(fn_days_to_finish)
+    save_service(client=client, fn=fn, fn_expiration_date=fn_expiration_date,
+                 fn_days_to_finish=fn_days_to_finish, fn_status=fn_status)
 
 
 def save_to_service(client_pk: str, to_pk: str, to_add_date: str):
@@ -136,21 +168,29 @@ def save_to_service(client_pk: str, to_pk: str, to_add_date: str):
     client: Client = Client.objects.get(pk=client_pk)
     to: TO = TO.objects.get(pk=to_pk)
     to_expiration_date: datetime = get_expiration_date(to_pk, 'to', to_add_date)
-    save_service(client=client, to=to, to_expiration_date=to_expiration_date)
+    to_days_to_finish: int = get_days_to_finish(to_expiration_date)
+    to_status: str = get_service_status(to_days_to_finish)
+    save_service(client=client, to=to, to_expiration_date=to_expiration_date,
+                 to_days_to_finish=to_days_to_finish, to_status=to_status)
 
 
-def save_service(client=None, cash_machine=None, factory_number=None, ecp=None, ecp_add_date=None,
-                 ecp_expiration_date=None, ofd=None, ofd_add_date=None, ofd_expiration_date=None,
-                 fn=None, fn_add_date=None, fn_expiration_date=None, to=None, to_add_date=None,
-                 to_expiration_date=None) -> None:
+def save_service(client=None, cash_machine=None, factory_number=None,
+                 ecp=None, ecp_add_date=None, ecp_expiration_date=None, ecp_days_to_finish=None, ecp_status=None,
+                 ofd=None, ofd_add_date=None, ofd_expiration_date=None, ofd_days_to_finish=None, ofd_status=None,
+                 fn=None, fn_add_date=None, fn_expiration_date=None, fn_days_to_finish=None, fn_status=None,
+                 to=None, to_add_date=None, to_expiration_date=None, to_days_to_finish=None, to_status=None) -> None:
     """ Сохранение услуги, принимает входные данные от одной из функций
         (save_ecp_service, save_ofd_service, save_fn_service, save_to_service)
         сохраняет как отдельную услугу заполняя пустые поля значениями None. """
     service = Service(client=client, cash_machine=cash_machine, factory_number=factory_number,
                       ecp=ecp, ecp_add_date=ecp_add_date, ecp_expiration_date=ecp_expiration_date,
+                      ecp_days_to_finish=ecp_days_to_finish, ecp_status=ecp_status,
                       ofd=ofd, ofd_add_date=ofd_add_date, ofd_expiration_date=ofd_expiration_date,
+                      ofd_days_to_finish=ofd_days_to_finish, ofd_status=ofd_status,
                       fn=fn, fn_add_date=fn_add_date, fn_expiration_date=fn_expiration_date,
-                      to=to, to_add_date=to_add_date, to_expiration_date=to_expiration_date)
+                      fn_days_to_finish=fn_days_to_finish, fn_status=fn_status,
+                      to=to, to_add_date=to_add_date, to_expiration_date=to_expiration_date,
+                      to_days_to_finish=to_days_to_finish, to_status=to_status)
     service.save()
 
 
@@ -176,6 +216,25 @@ def get_expiration_date(service_pk: str, service_type: str, add_date: str) -> da
     return datetime_add_date + relativedelta(months=validity)
 
 
+def get_days_to_finish(expiration_date: datetime) -> int:
+    """ Функция получения количества дней до окончания срока действия услуги. """
+    return (expiration_date - datetime.date.today()).days
+
+
+def get_service_status(days_to_finish: int) -> str:
+    """ Функция получения статуса услуги в виде строкового кода.
+        Отслеживает значение количества дней до окончания услуги и присваивает соответсвующий код.
+        Менее 0 дней - код: 'FA' (FAILED)
+        Менее 30-ти дней - код: 'AT' (ATTENTION)
+        Более 30-ти дней - код: 'OK' (OK). """
+    if days_to_finish < 0:
+        return 'FA'
+    elif days_to_finish < 30:
+        return 'AT'
+    else:
+        return 'OK'
+
+
 def get_data_to_find_matches(clients_queryset) -> list:
     """ Функция формирования списка из данных для поиска совпадений на странице clients. """
     data_to_find_matches: list = []
@@ -187,6 +246,7 @@ def get_data_to_find_matches(clients_queryset) -> list:
 
 
 def get_client_profile_context(request: HttpRequest) -> dict:
+    """ Функция генерации контекста для контроллера рендера страницы профайла клиента. """
     client_pk: str = request.POST.get('client_pk')
     client: Client = Client.objects.get(pk=client_pk)
     client_services = client.get_services()
