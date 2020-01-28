@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    {% load static %}
+    {% include "accounting_system/links.html" %}
+    <title>Авторизация</title>
+</head>
+<body>
+
+    <div class="wrap flex-center auth-page">
+
+        <form action="/login/" method="post">
+
+            {% csrf_token %}
+
+            <div class="auth-div flex-center-column">
+
+                <img class="auth-logo" src="{% static 'accounting_system/auth-logo.png' %}" alt="logo">
+
+                <div class="auth-form flex-center-column">
+
+                    {{ form }}
+
+                </div>
+
+                <button class="auth-button">ВХОД</button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</body>
+
+</html>

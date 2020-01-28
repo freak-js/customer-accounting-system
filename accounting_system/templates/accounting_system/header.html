@@ -1,0 +1,35 @@
+{% load static %}
+
+<div class="header">
+
+    <div class="header-logo">
+
+        <img class="header-img" src="{% static 'accounting_system/logo-2.png' %}" alt="logo">
+
+    </div>
+
+    <div class="header-filters">
+
+        <!-- FILTERS -->
+
+    </div>
+
+    <div class="manager-name-div flex-center">
+
+        <span>{{ user.get_full_name }}</span>
+
+    </div>
+
+    <div>
+
+        <form action="/logout/" method="POST">
+
+            {% csrf_token %}
+
+            <button class="header-button">ВЫХОД</button>
+
+        </form>
+
+    </div>
+
+</div>
