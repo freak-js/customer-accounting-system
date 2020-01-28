@@ -1,5 +1,5 @@
-from .models import ECP, CashMachine, OFD, FN, TO, Service, Client
-from typing import Union
+from .models import ECP, CashMachine, OFD, FN, TO, Service, Client, Manager
+from typing import Union, List
 import datetime
 from dateutil.relativedelta import relativedelta
 
@@ -137,7 +137,7 @@ def save_ecp_service(client_pk: str, ecp_pk: str, ecp_add_date: str) -> None:
     ecp_expiration_date: datetime = get_expiration_date(ecp_pk, 'ecp', ecp_add_date)
     ecp_days_to_finish: int = get_days_to_finish(ecp_expiration_date)
     ecp_status: str = get_service_status(ecp_days_to_finish)
-    save_service(client=client, ecp=ecp, ecp_expiration_date=ecp_expiration_date,
+    save_service(client=client, ecp=ecp, ecp_add_date=ecp_add_date, ecp_expiration_date=ecp_expiration_date,
                  ecp_days_to_finish=ecp_days_to_finish, ecp_status=ecp_status)
 
 
@@ -148,7 +148,7 @@ def save_ofd_service(client_pk: str, ofd_pk: str, ofd_add_date: str) -> None:
     ofd_expiration_date: datetime = get_expiration_date(ofd_pk, 'ofd', ofd_add_date)
     ofd_days_to_finish: int = get_days_to_finish(ofd_expiration_date)
     ofd_status: str = get_service_status(ofd_days_to_finish)
-    save_service(client=client, ofd=ofd, ofd_expiration_date=ofd_expiration_date,
+    save_service(client=client, ofd=ofd, ofd_add_date=ofd_add_date, ofd_expiration_date=ofd_expiration_date,
                  ofd_days_to_finish=ofd_days_to_finish, ofd_status=ofd_status)
 
 
@@ -159,7 +159,7 @@ def save_fn_service(client_pk: str, fn_pk: str, fn_add_date: str) -> None:
     fn_expiration_date: datetime = get_expiration_date(fn_pk, 'fn', fn_add_date)
     fn_days_to_finish: int = get_days_to_finish(fn_expiration_date)
     fn_status: str = get_service_status(fn_days_to_finish)
-    save_service(client=client, fn=fn, fn_expiration_date=fn_expiration_date,
+    save_service(client=client, fn=fn, fn_add_date=fn_add_date, fn_expiration_date=fn_expiration_date,
                  fn_days_to_finish=fn_days_to_finish, fn_status=fn_status)
 
 
@@ -170,7 +170,7 @@ def save_to_service(client_pk: str, to_pk: str, to_add_date: str):
     to_expiration_date: datetime = get_expiration_date(to_pk, 'to', to_add_date)
     to_days_to_finish: int = get_days_to_finish(to_expiration_date)
     to_status: str = get_service_status(to_days_to_finish)
-    save_service(client=client, to=to, to_expiration_date=to_expiration_date,
+    save_service(client=client, to=to, to_add_date=to_add_date, to_expiration_date=to_expiration_date,
                  to_days_to_finish=to_days_to_finish, to_status=to_status)
 
 
@@ -225,10 +225,13 @@ def get_service_status(days_to_finish: int) -> str:
     """ Функция получения статуса услуги в виде строкового кода.
         Отслеживает значение количества дней до окончания услуги и присваивает соответсвующий код.
         Менее 0 дней - код: 'FA' (FAILED)
+        Менее 10-ти дней - код: 'AL' (ALARM)
         Менее 30-ти дней - код: 'AT' (ATTENTION)
         Более 30-ти дней - код: 'OK' (OK). """
     if days_to_finish < 0:
         return 'FA'
+    if days_to_finish < 10:
+        return 'AL'
     elif days_to_finish < 30:
         return 'AT'
     else:
@@ -253,3 +256,38 @@ def get_client_profile_context(request: HttpRequest) -> dict:
     context: dict = {'page': 'clients', 'client': client, 'user': request.user,
                      'client_services': client_services, 'client_pk': client_pk}
     return context
+
+
+def get_tasks_list(user: Manager) -> List[Service]:
+    """ Функция получения списка услуг, с подходящим к окончанию,
+        или истекшим сроком действия услуги.
+        Проверяет на отсутсвие статуса 'ОК' в каждой из подуслуг,
+        в случае его отсутсвия - добавляет услугу в список task_list. """
+    task_list: list = []
+    if user.is_staff:
+        clients_queryset = Client.objects.filter(active=True)
+        for client in clients_queryset:
+            for service in client.get_services():
+                if check_service_overdue(service):
+                    task_list.append(service)
+    else:
+        user_clients_queryset = user.get_clients()
+        for client in user_clients_queryset:
+            for service in client.get_services():
+                if check_service_overdue(service):
+                    task_list.append(service)
+    return task_list
+
+
+def check_service_overdue(service: Service) -> bool:
+    """ Функция проверки статуса услуги.
+        В случае несовпадения со статусом 'OK' возвращет True. """
+    if service.ecp_status and service.ecp_status != 'OK':
+        return True
+    if service.ofd_status and service.ofd_status != 'OK':
+        return True
+    if service.fn_status and service.fn_status != 'OK':
+        return True
+    if service.to_status and service.to_status != 'OK':
+        return True
+    return False

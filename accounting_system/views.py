@@ -6,7 +6,7 @@ from django.views.decorators.http import require_POST
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import logout
 from .utils import (get_service_class_instance, create_service_for_client, get_data_to_find_matches,
-                    make_changes_to_the_service, get_client_profile_context)
+                    make_changes_to_the_service, get_client_profile_context, get_tasks_list)
 from .forms import (CustomUserCreationForm, ManagerChangeForm, CashMachineCreationForm, FNCreationForm,
                     TOCreationForm, ECPCreationForm, OFDCreationForm)
 from .models import Manager, Client, CashMachine, ECP, OFD, FN, TO, Service
@@ -174,7 +174,8 @@ def tasks(request: HttpRequest) -> HttpResponse:
         Для менеджера выводит список его задач.
         Для администратора выводит список задач всех менеджеров в системе,
         включая и его собственные. """
-    context: dict = {'page': 'tasks', 'user': request.user}
+    tasks = get_tasks_list(request.user)
+    context: dict = {'page': 'tasks', 'user': request.user, 'tasks': tasks}
     return render(request, 'accounting_system/tasks/tasks.html', context)
 
 
