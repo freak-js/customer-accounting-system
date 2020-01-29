@@ -21,11 +21,15 @@
 
                     <div class="flex-column">
 
-                        <h3>{{ service. }}</h3>
-
                         <div>
 
                             <h2>{{ service.client }}</h2>
+
+                            {% if user.is_staff %}
+
+                                <span class="d-flex-ai-center">менеджер:&nbsp;&nbsp;<h3>{{ service.client.manager }}</h3></span>
+
+                            {% endif %}
 
                             {% if service.cash_machine %}
 

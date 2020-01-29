@@ -9,6 +9,8 @@ from django.http import HttpRequest
 
 SERVICE_TYPE_DICT: dict = {'kkt': CashMachine, 'ecp': ECP, 'ofd': OFD, 'fn': FN, 'to': TO}
 
+UPDATE_FIELD_LIST = ['ecp_days_to_finish', 'ecp_status', 'ofd_days_to_finish', 'ofd_status',
+                     'fn_days_to_finish', 'fn_status', 'to_days_to_finish', 'to_status']
 
 # FUNCTIONS
 
@@ -265,14 +267,13 @@ def get_tasks_list(user: Manager) -> List[Service]:
         в случае его отсутсвия - добавляет услугу в список task_list. """
     task_list: list = []
     if user.is_staff:
-        clients_queryset = Client.objects.filter(active=True)
-        for client in clients_queryset:
-            for service in client.get_services():
-                if check_service_overdue(service):
-                    task_list.append(service)
+        service_queryset = Service.objects.filter(active=True)
+        for service in service_queryset:
+            if check_service_overdue(service):
+                task_list.append(service)
     else:
-        user_clients_queryset = user.get_clients()
-        for client in user_clients_queryset:
+        manager_clients_queryset = user.get_clients()
+        for client in manager_clients_queryset:
             for service in client.get_services():
                 if check_service_overdue(service):
                     task_list.append(service)
@@ -291,3 +292,27 @@ def check_service_overdue(service: Service) -> bool:
     if service.to_status and service.to_status != 'OK':
         return True
     return False
+
+
+def update_tasks_status() -> None:
+    """ Функция апдейта статусов услуг при входе менеджера в систему. """
+    service_queryset = Service.objects.filter(active=True)
+    service_objects_list = [update_task(service) for service in service_queryset]
+    Service.objects.bulk_update(service_objects_list, UPDATE_FIELD_LIST)
+
+
+def update_task(service: Service) -> Service:
+    """ Функция пересчета и обновления дней до окончания услуги и статуса услуги. """
+    if service.ecp_expiration_date:
+        service.ecp_days_to_finish = get_days_to_finish(service.ecp_expiration_date)
+        service.ecp_status = get_service_status(service.ecp_days_to_finish)
+    if service.ofd_expiration_date:
+        service.ofd_days_to_finish = get_days_to_finish(service.ofd_expiration_date)
+        service.ofd_status = get_service_status(service.ofd_days_to_finish)
+    if service.fn_expiration_date:
+        service.fn_days_to_finish = get_days_to_finish(service.fn_expiration_date)
+        service.fn_status = get_service_status(service.fn_days_to_finish)
+    if service.to_expiration_date:
+        service.to_days_to_finish = get_days_to_finish(service.to_expiration_date)
+        service.to_status = get_service_status(service.to_days_to_finish)
+    return service

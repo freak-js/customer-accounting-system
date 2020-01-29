@@ -450,11 +450,11 @@ h4{margin: 5px 0;}
 }
 
 .alarm{
-    background-color: #ff62004d !important;
+    background-color: #ff620021 !important;
 }
 
 .failed{
-    background-color: #f4000078 !important;
+    background-color: #f4000033 !important;
 }
 
 /* BUTTONS */
@@ -575,7 +575,7 @@ h4{margin: 5px 0;}
     height: 100%;
     border: none;
     border-left: 2px solid #2d353d;
-    border-radius: 0 20px 20px 0;
+    border-radius: 0 15px 15px 0;
     color: #2d353d;
     font-size: 21px;
     background-color: #fff;
