@@ -18,7 +18,19 @@ class Manager(AbstractUser):
         self.save(update_fields=['is_active'])
 
     def get_clients(self):
-        return self.clients.all().filter(active=True)
+        return self.clients.filter(active=True)
+
+    def get_count_tasks_in_work(self) -> int:
+        counter: int = 0
+        clients_queryset = self.get_clients()
+        for client in clients_queryset:
+            client_services_queryset = client.get_services()
+            for service in client_services_queryset:
+                if service.ecp_status in ('AL', 'AT'): counter += 1
+                if service.ofd_status in ('AL', 'AT'): counter += 1
+                if service.fn_status in ('AL', 'AT'): counter += 1
+                if service.to_status in ('AL', 'AT'): counter += 1
+        return counter
 
 
 class Client(models.Model):
@@ -38,7 +50,7 @@ class Client(models.Model):
         return self.organization_name
 
     def get_count_active_services(self):
-        active_services = self.services.all().filter(active=True)
+        active_services = self.services.filter(active=True)
         counter = 0
         for service in active_services:
             if service.ecp: counter += 1
@@ -48,7 +60,7 @@ class Client(models.Model):
         return counter
 
     def get_services(self):
-        return self.services.all().filter(active=True)
+        return self.services.filter(active=True)
 
     def kill(self):
         self.active = False

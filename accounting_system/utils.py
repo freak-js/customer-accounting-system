@@ -2,8 +2,10 @@ from .models import ECP, CashMachine, OFD, FN, TO, Service, Client, Manager
 from typing import Union, List
 import datetime
 from dateutil.relativedelta import relativedelta
-
 from django.http import HttpRequest
+from django.db.models import Count, Q
+import time
+from typing import Any
 
 # CONSTANTS
 
@@ -11,6 +13,7 @@ SERVICE_TYPE_DICT: dict = {'kkt': CashMachine, 'ecp': ECP, 'ofd': OFD, 'fn': FN,
 
 UPDATE_FIELD_LIST = ['ecp_days_to_finish', 'ecp_status', 'ofd_days_to_finish', 'ofd_status',
                      'fn_days_to_finish', 'fn_status', 'to_days_to_finish', 'to_status']
+
 
 # FUNCTIONS
 
@@ -267,7 +270,7 @@ def get_tasks_list(user: Manager) -> List[Service]:
         в случае его отсутсвия - добавляет услугу в список task_list. """
     task_list: list = []
     if user.is_staff:
-        service_queryset = Service.objects.filter(active=True)
+        service_queryset = Service.objects.filter(active=True, client__active=True)
         for service in service_queryset:
             if check_service_overdue(service):
                 task_list.append(service)
@@ -316,3 +319,23 @@ def update_task(service: Service) -> Service:
         service.to_days_to_finish = get_days_to_finish(service.to_expiration_date)
         service.to_status = get_service_status(service.to_days_to_finish)
     return service
+
+
+def get_managers_queryset() -> Any:
+    managers_queryset = Manager.objects.filter(is_active=True, clients__active=True,
+        clients__services__active=True).annotate(
+            count_failed_tasks=Count('clients__services', filter=Q(clients__services__ecp_status='FA')) +
+                Count('clients__services', filter=Q(clients__services__ofd_status='FA')) +
+                Count('clients__services', filter=Q(clients__services__fn_status='FA')) +
+                Count('clients__services', filter=Q(clients__services__to_status='FA')),
+            count_tasks=Count('clients__services', filter=Q(clients__services__ecp_status='AL') |
+                Q(clients__services__ecp_status='AT')) +
+                Count('clients__services', filter=Q(clients__services__ofd_status='AL') |
+                Q(clients__services__ofd_status='AT')) +
+                Count('clients__services', filter=Q(clients__services__fn_status='AL') |
+                Q(clients__services__fn_status='AT')) +
+                Count('clients__services', filter=Q(clients__services__to_status='AL') |
+                Q(clients__services__to_status='AT'))
+    )
+    print(managers_queryset.query)
+    return managers_queryset

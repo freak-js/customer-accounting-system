@@ -6,7 +6,8 @@ from django.views.decorators.http import require_POST
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import logout
 from .utils import (get_service_class_instance, create_service_for_client, get_data_to_find_matches,
-                    make_changes_to_the_service, get_client_profile_context, get_tasks_list, update_tasks_status)
+                    make_changes_to_the_service, get_client_profile_context, get_tasks_list,
+                    update_tasks_status, get_managers_queryset)
 from .forms import (CustomUserCreationForm, ManagerChangeForm, CashMachineCreationForm, FNCreationForm,
                     TOCreationForm, ECPCreationForm, OFDCreationForm)
 from .models import Manager, Client, CashMachine, ECP, OFD, FN, TO, Service
@@ -112,7 +113,7 @@ def client_profile(request: HttpRequest) -> HttpResponse:
 def staff(request: HttpRequest) -> HttpResponse:
     """ Контроллер со списком пользователей зарегестрированных в системе.
         Доступен только администратору и суперпользователю. """
-    managers = Manager.objects.filter(is_active=True)
+    managers = get_managers_queryset().order_by('pk')
     context: dict = {'page': 'staff', 'managers': managers, 'user': request.user}
     return render(request, 'accounting_system/managers/staff.html', context)
 

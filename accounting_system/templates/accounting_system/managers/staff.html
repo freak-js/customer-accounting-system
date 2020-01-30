@@ -31,11 +31,9 @@
 
                         <div class="manager-data">
 
-                            <span>В работе:</span>&nbsp;&nbsp;&nbsp;
+                            <span>В работе: {{ manager.count_tasks }}</span>&nbsp;&nbsp;&nbsp;
 
-                            <span>Завершено:</span>&nbsp;&nbsp;&nbsp;
-
-                            <span>Потрачено:</span>&nbsp;&nbsp;&nbsp;
+                            <span>Провалено: {{ manager.count_failed_tasks }}</span>&nbsp;&nbsp;&nbsp;
 
                             <span>Клиентов: {{ manager.get_clients.count }}</span>
 
