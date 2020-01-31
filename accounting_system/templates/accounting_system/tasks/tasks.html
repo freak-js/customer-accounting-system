@@ -13,7 +13,51 @@
 
         {% include "accounting_system/left_panel.html" %}
 
-        <div class="right-panel py-25">
+        <div class="right-panel {% if not user.is_staff %}py-25{% endif %}">
+
+            {% if user.is_staff %}
+
+                <div class="right-panel-header">
+
+                    <form class="flex-center" action="/tasks/" method="POST">
+
+                        {% csrf_token %}
+
+                        <select class="tasks-filter-selectbox" name="manager_pk">
+
+                            {% if not manager_pk_for_filter %}
+
+                                <option value="" selected>Без фильтра</option>
+
+                            {% else %}
+
+                                <option value="">Без фильтра</option>
+
+                            {% endif %}
+
+                            {% for manager in managers %}
+
+                                {% if manager.pk == manager_pk_for_filter %}
+
+                                    <option value="{{ manager.pk }}" selected>{{ manager.get_full_name }}</option>
+
+                                {% else %}
+
+                                    <option value="{{ manager.pk }}">{{ manager.get_full_name }}</option>
+
+                                {% endif %}
+
+                            {% endfor %}
+
+                        </select>
+
+                        <button class="tasks-filter-button">ОТФИЛЬТРОВАТЬ</button>
+
+                    </form>
+                
+                </div>
+
+            {% endif %}
 
             {% for service in tasks %}
 

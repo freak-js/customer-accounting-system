@@ -20,18 +20,6 @@ class Manager(AbstractUser):
     def get_clients(self):
         return self.clients.filter(active=True)
 
-    def get_count_tasks_in_work(self) -> int:
-        counter: int = 0
-        clients_queryset = self.get_clients()
-        for client in clients_queryset:
-            client_services_queryset = client.get_services()
-            for service in client_services_queryset:
-                if service.ecp_status in ('AL', 'AT'): counter += 1
-                if service.ofd_status in ('AL', 'AT'): counter += 1
-                if service.fn_status in ('AL', 'AT'): counter += 1
-                if service.to_status in ('AL', 'AT'): counter += 1
-        return counter
-
 
 class Client(models.Model):
     organization_name = models.CharField('Название организации', max_length=100)

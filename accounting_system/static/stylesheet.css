@@ -105,6 +105,12 @@ h4{margin: 5px 0;}
     align-items: center;
 }
 
+.d-flex-ai-center-jc-end{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
 .flex-grow-1{
     flex-grow: 1;
 }
@@ -607,6 +613,25 @@ h4{margin: 5px 0;}
     letter-spacing: 1px;
 }
 
+.change-client-profile-button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 210px;
+    margin-right: 20px;
+    height: 44px;
+    color: #2d353d;
+    font-size: 16px;
+    transition: 500ms;
+    border: 2px solid;
+    border-radius: 10px;
+    background-color: white;
+}
+.change-client-profile-button:hover{
+    cursor: pointer;
+    letter-spacing: 1px;
+}
+
 .search-client-button{
     display: flex;
     justify-content: center;
@@ -621,8 +646,46 @@ h4{margin: 5px 0;}
     border-radius: 10px;
     background-color: white;
 }
-
 .search-client-button:hover{
+    cursor: pointer;
+    letter-spacing: 1px;
+}
+
+.show-all-client-button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 120px;
+    margin: 0px 15px 0 40px;
+    height: 44px;
+    color: #2d353d;
+    font-size: 16px;
+    transition: 500ms;
+    border: 2px solid;
+    border-radius: 10px;
+    background-color: white;
+}
+.show-all-client-button:hover{
+    cursor: pointer;
+    letter-spacing: 1px;
+}
+
+.tasks-filter-button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 184px;
+    margin-right: 20px;
+    margin-left: 15px;
+    height: 44px;
+    color: #2d353d;
+    font-size: 16px;
+    transition: 500ms;
+    border: 2px solid;
+    border-radius: 10px;
+    background-color: white;
+}
+.tasks-filter-button:hover{
     cursor: pointer;
     letter-spacing: 1px;
 }
@@ -743,6 +806,19 @@ h4{margin: 5px 0;}
     font-size: 45px;
     margin-left: 20px;
     font-weight: bold;
+}
+
+/* SELECTBOX */
+
+.tasks-filter-selectbox{
+    background: white;
+    min-width: 330px;
+    height: 42px;
+    font-size: 20px;
+    color: #2d353d;
+    font-family: 'Oswald', sans-serif;
+    border: 2px solid #2d353d;
+    border-radius: 10px;
 }
 
 /* ANIMATION */

@@ -17,6 +17,14 @@
 
             <div class="right-panel-header">
 
+                <form action="/change-client-form/" method="post">
+
+                    {% csrf_token %}
+
+                    <button class="change-client-profile-button" name="client_pk" value="{{ client.pk }}">РЕДАКТИРОВАТЬ КЛИЕНТА</button>
+
+                </form>
+
                 <form action="/add-service-for-client-form/" method="post">
 
                     {% csrf_token %}

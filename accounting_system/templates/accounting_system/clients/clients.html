@@ -21,7 +21,7 @@
 
                     {% csrf_token %}
 
-                    <div class="flex-center search-container">
+                    <div class="d-flex-ai-center-jc-end search-container">
 
                         <div>
 
@@ -34,6 +34,14 @@
                         <button class="search-client-button">ПОИСК<img class="search-img" src="{% static 'accounting_system/search.png' %}" alt="search-img"></button>
 
                     </div>
+
+                </form>
+
+                <form method="POST" action="/clients/">
+
+                    {% csrf_token %}
+
+                    <button class="show-all-client-button" name="show_all" value="True">ВСЕ КЛИЕНТЫ</button>
 
                 </form>
 

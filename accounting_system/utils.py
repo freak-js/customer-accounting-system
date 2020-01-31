@@ -263,14 +263,18 @@ def get_client_profile_context(request: HttpRequest) -> dict:
     return context
 
 
-def get_tasks_list(user: Manager) -> List[Service]:
+def get_tasks_list(user: Manager, manager_pk_for_filter: str) -> List[Service]:
     """ Функция получения списка услуг, с подходящим к окончанию,
         или истекшим сроком действия услуги.
         Проверяет на отсутсвие статуса 'ОК' в каждой из подуслуг,
         в случае его отсутсвия - добавляет услугу в список task_list. """
     task_list: list = []
     if user.is_staff:
-        service_queryset = Service.objects.filter(active=True, client__active=True)
+        if manager_pk_for_filter:
+            service_queryset = Service.objects.filter(active=True, client__active=True,
+                                                      client__manager=manager_pk_for_filter)
+        else:
+            service_queryset = Service.objects.filter(active=True, client__active=True)
         for service in service_queryset:
             if check_service_overdue(service):
                 task_list.append(service)
@@ -299,9 +303,11 @@ def check_service_overdue(service: Service) -> bool:
 
 def update_tasks_status() -> None:
     """ Функция апдейта статусов услуг при входе менеджера в систему. """
+    start = time.time()
     service_queryset = Service.objects.filter(active=True)
     service_objects_list = [update_task(service) for service in service_queryset]
     Service.objects.bulk_update(service_objects_list, UPDATE_FIELD_LIST)
+    print('Время выполнения:', (time.time() - start) * 1000, 'ms')
 
 
 def update_task(service: Service) -> Service:
@@ -322,20 +328,37 @@ def update_task(service: Service) -> Service:
 
 
 def get_managers_queryset() -> Any:
-    managers_queryset = Manager.objects.filter(is_active=True, clients__active=True,
-        clients__services__active=True).annotate(
+    """ Запрос на получение queryset с менеджерами аннотироваными количеством
+        задач в работе и количеством проваленных задач. """
+    managers_queryset = Manager.objects.filter(
+        is_active=True, clients__active=True, clients__services__active=True).annotate(
             count_failed_tasks=Count('clients__services', filter=Q(clients__services__ecp_status='FA')) +
-                Count('clients__services', filter=Q(clients__services__ofd_status='FA')) +
-                Count('clients__services', filter=Q(clients__services__fn_status='FA')) +
-                Count('clients__services', filter=Q(clients__services__to_status='FA')),
-            count_tasks=Count('clients__services', filter=Q(clients__services__ecp_status='AL') |
-                Q(clients__services__ecp_status='AT')) +
-                Count('clients__services', filter=Q(clients__services__ofd_status='AL') |
-                Q(clients__services__ofd_status='AT')) +
-                Count('clients__services', filter=Q(clients__services__fn_status='AL') |
-                Q(clients__services__fn_status='AT')) +
-                Count('clients__services', filter=Q(clients__services__to_status='AL') |
-                Q(clients__services__to_status='AT'))
+            Count('clients__services', filter=Q(clients__services__ofd_status='FA')) +
+            Count('clients__services', filter=Q(clients__services__fn_status='FA')) +
+            Count('clients__services', filter=Q(clients__services__to_status='FA')),
+            count_tasks=Count('clients__services',
+                              filter=Q(clients__services__ecp_status='AL') | Q(clients__services__ecp_status='AT')) +
+            Count('clients__services',
+                  filter=Q(clients__services__ofd_status='AL') | Q(clients__services__ofd_status='AT')) +
+            Count('clients__services',
+                  filter=Q(clients__services__fn_status='AL') | Q(clients__services__fn_status='AT')) +
+            Count('clients__services',
+                  filter=Q(clients__services__to_status='AL') | Q(clients__services__to_status='AT'))
     )
-    print(managers_queryset.query)
     return managers_queryset
+
+
+def save_client_changes(request: HttpRequest) -> None:
+    p = request.POST
+    client_pk: str = p.get('client_pk')
+    client: Client = Client.objects.get(pk=client_pk)
+    client.organization_name = p.get('organization_name')
+    client.first_name = p.get('first_name')
+    client.last_name = p.get('last_name')
+    client.patronymic = p.get('patronymic')
+    client.phone_number = p.get('phone_number')
+    client.email = p.get('email')
+    client.inn = p.get('inn')
+    client.comment = p.get('comment')
+    client.manager = Manager.objects.get(pk=p.get('manager_pk'))
+    client.save()

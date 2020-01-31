@@ -7,7 +7,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import logout
 from .utils import (get_service_class_instance, create_service_for_client, get_data_to_find_matches,
                     make_changes_to_the_service, get_client_profile_context, get_tasks_list,
-                    update_tasks_status, get_managers_queryset)
+                    update_tasks_status, get_managers_queryset, save_client_changes)
 from .forms import (CustomUserCreationForm, ManagerChangeForm, CashMachineCreationForm, FNCreationForm,
                     TOCreationForm, ECPCreationForm, OFDCreationForm)
 from .models import Manager, Client, CashMachine, ECP, OFD, FN, TO, Service
@@ -45,12 +45,18 @@ def logout_view(request: HttpRequest) -> HttpResponse:
 def clients(request: HttpRequest) -> HttpResponse:
     """ Контроллер со списком клиентов и живым регистронезависимым поиском. """
     if request.user.is_staff:
-        clients_queryset = Client.objects.filter(active=True).order_by('-id')
+        if request.POST.get('show_all'):
+            clients_queryset = Client.objects.filter(active=True).order_by('-id')
+        else:
+            clients_queryset = Client.objects.filter(active=True).order_by('-id')[:8]
         data_to_find_matches: list = get_data_to_find_matches(clients_queryset)
     else:
-        clients_queryset = request.user.get_clients().filter(active=True).order_by('-id')
+        if request.POST.get('show_all'):
+            clients_queryset = request.user.get_clients().filter(active=True).order_by('-id')
+        else:
+            clients_queryset = request.user.get_clients().filter(active=True).order_by('-id')[:8]
         data_to_find_matches: list = get_data_to_find_matches(clients_queryset)
-    context: dict = {'page': 'clients', 'user': request.user, 'clients': clients_queryset[:10],
+    context: dict = {'page': 'clients', 'user': request.user, 'clients': clients_queryset,
                      'data_to_find_matches': str(data_to_find_matches)}
     return render(request, 'accounting_system/clients/clients.html', context)
 
@@ -101,6 +107,21 @@ def delete_client(request: HttpRequest) -> HttpResponse:
 @login_required
 def client_profile(request: HttpRequest) -> HttpResponse:
     """ Контроллер профиля клиента. Отображает список услуг присвоенных клиенту. """
+    context = get_client_profile_context(request)
+    return render(request, 'accounting_system/clients/client_profile.html', context)
+
+
+def change_client_form(request: HttpRequest) -> HttpResponse:
+    """ Контроллер генерации формы для редактирования данных о клиенте. """
+    managers = Manager.objects.filter(is_active=True)
+    client = get_object_or_404(Client, pk=request.POST.get('client_pk'))
+    context: dict = {'page': 'clients', 'user': request.user, 'managers': managers, 'client': client}
+    return render(request, 'accounting_system/clients/change_client.html', context)
+
+
+def change_client(request: HttpRequest) -> HttpResponse:
+    """ Контроллер сохранения изменений данных клиента. """
+    save_client_changes(request)
     context = get_client_profile_context(request)
     return render(request, 'accounting_system/clients/client_profile.html', context)
 
@@ -183,9 +204,14 @@ def tasks(request: HttpRequest) -> HttpResponse:
     """ Контроллер страницы с задачами пользователя.
         Для менеджера выводит список его задач.
         Для администратора выводит список задач всех менеджеров в системе,
-        включая и его собственные. """
-    tasks_list = get_tasks_list(request.user)
-    context: dict = {'page': 'tasks', 'user': request.user, 'tasks': tasks_list}
+        включая и его собственные.
+        Если в запросе присутсвует manager_pk, то отдает задачи только для
+        менеджера переданного в manager_pk. """
+    manager_pk: str = request.POST.get('manager_pk')
+    managers = Manager.objects.filter(is_active=True)
+    tasks_list: list = get_tasks_list(request.user, manager_pk)
+    context: dict = {'page': 'tasks', 'user': request.user, 'tasks': tasks_list,
+                     'managers': managers, 'manager_pk_for_filter': int(manager_pk) if manager_pk else None}
     return render(request, 'accounting_system/tasks/tasks.html', context)
 
 
