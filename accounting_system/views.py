@@ -7,7 +7,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import logout
 from .utils import (get_service_class_instance, create_service_for_client, get_data_to_find_matches,
                     make_changes_to_the_service, get_client_profile_context, get_tasks_list,
-                    update_tasks_status, get_managers_queryset, save_client_changes)
+                    update_tasks_status, get_managers_queryset, save_client_changes, get_event_list)
 from .forms import (CustomUserCreationForm, ManagerChangeForm, CashMachineCreationForm, FNCreationForm,
                     TOCreationForm, ECPCreationForm, OFDCreationForm)
 from .models import Manager, Client, CashMachine, ECP, OFD, FN, TO, Service
@@ -220,8 +220,12 @@ def tasks(request: HttpRequest) -> HttpResponse:
 
 @login_required
 def calendar(request: HttpRequest) -> HttpResponse:
-    """ Контроллер интерактивного календаря. """
-    context: dict = {'page': 'calendar', 'user': request.user}
+    """ Контроллер интерактивного календаря.
+        Формирует календарь с датами окончаний сроков действия услуг в виде событий.
+        Для администраторов выводит все сроки.
+        Для менеджеров - только сроки окончания услуг принадлежащих им клиентов. """
+    event_list = get_event_list(request.user)
+    context: dict = {'page': 'calendar', 'user': request.user, 'event_list': event_list}
     return render(request, 'accounting_system/calendar/calendar.html', context)
 
 

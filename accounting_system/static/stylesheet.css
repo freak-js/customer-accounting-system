@@ -838,3 +838,18 @@ h4{margin: 5px 0;}
 .none{
     display: none;
 }
+
+/* EVENT CALENDAR */
+
+.right-panel-calendar{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding: 20px;
+    flex-grow: 1;
+}
+
+.event-calendar{
+    width: 800px;
+}
+
