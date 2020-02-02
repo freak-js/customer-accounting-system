@@ -1,3 +1,5 @@
+from typing import Union
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpRequest, HttpResponse
 from django.contrib.auth.forms import AuthenticationForm
@@ -5,15 +7,14 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import logout
-from .utils import (get_service_class_instance, create_service_for_client, get_data_to_find_matches,
-                    make_changes_to_the_service, get_client_profile_context, get_tasks_list,
-                    update_tasks_status, get_managers_queryset, save_client_changes, get_event_list)
-from .forms import (CustomUserCreationForm, ManagerChangeForm, CashMachineCreationForm, FNCreationForm,
-                    TOCreationForm, ECPCreationForm, OFDCreationForm)
-from .models import Manager, Client, CashMachine, ECP, OFD, FN, TO, Service
-from typing import Union
 from django.contrib.auth.signals import user_logged_in
 from django.dispatch import receiver
+
+from .forms import (CustomUserCreationForm, ManagerChangeForm, CashMachineCreationForm,
+                    FNCreationForm, TOCreationForm, ECPCreationForm, OFDCreationForm)
+from .models import Manager, Client, CashMachine, ECP, OFD, FN, TO, Service
+from .services import (constants, clients_utils, managers_utils, tasks_utils,
+                       calendar_utils, services_utils, common_utils)
 
 
 # AUTH
@@ -23,7 +24,7 @@ from django.dispatch import receiver
 def signal_user_logged_in(sender, user: Manager, request: HttpRequest, **kwargs) -> None:
     """ Контроллер пересчета и обновления статусов и колчества дней до кончания услуги.
         Вызывается при логине любого из менеджеров. """
-    update_tasks_status()
+    tasks_utils.update_tasks_status()
 
 
 @login_required
@@ -44,18 +45,16 @@ def logout_view(request: HttpRequest) -> HttpResponse:
 @login_required
 def clients(request: HttpRequest) -> HttpResponse:
     """ Контроллер со списком клиентов и живым регистронезависимым поиском. """
+    show_all = request.POST.get('show_all')
     if request.user.is_staff:
-        if request.POST.get('show_all'):
-            clients_queryset = Client.objects.filter(active=True).order_by('-id')
-        else:
-            clients_queryset = Client.objects.filter(active=True).order_by('-id')[:8]
-        data_to_find_matches: list = get_data_to_find_matches(clients_queryset)
+        clients_queryset = Client.objects.filter(active=True).order_by('-id') if show_all else Client.objects.filter(
+            active=True).order_by('-id')[:constants.CLIENT_PAGE_LIMIT]
     else:
-        if request.POST.get('show_all'):
-            clients_queryset = request.user.get_clients().filter(active=True).order_by('-id')
-        else:
-            clients_queryset = request.user.get_clients().filter(active=True).order_by('-id')[:8]
-        data_to_find_matches: list = get_data_to_find_matches(clients_queryset)
+        clients_queryset = request.user.get_clients().filter(
+            active=True).order_by('-id') if show_all else request.user.get_clients().filter(active=True).order_by(
+            '-id')[:constants.CLIENT_PAGE_LIMIT]
+
+    data_to_find_matches: list = clients_utils.get_data_to_find_matches(clients_queryset)
     context: dict = {'page': 'clients', 'user': request.user, 'clients': clients_queryset,
                      'data_to_find_matches': str(data_to_find_matches)}
     return render(request, 'accounting_system/clients/clients.html', context)
@@ -69,11 +68,10 @@ def filter_clients(request: HttpRequest) -> HttpResponse:
     if request.user.is_staff:
         clients_queryset = Client.objects.filter(organization_name=organization_name)
         not_filter_clients = Client.objects.filter(active=True)
-        data_to_find_matches: list = get_data_to_find_matches(not_filter_clients)
     else:
         clients_queryset = request.user.get_clients().filter(organization_name=organization_name)
         not_filter_clients = request.user.get_clients().filter(active=True)
-        data_to_find_matches: list = get_data_to_find_matches(not_filter_clients)
+    data_to_find_matches: list = clients_utils.get_data_to_find_matches(not_filter_clients)
     context: dict = {'page': 'clients', 'user': request.user, 'clients': clients_queryset,
                      'data_to_find_matches': str(data_to_find_matches)}
     return render(request, 'accounting_system/clients/clients.html', context)
@@ -83,9 +81,8 @@ def filter_clients(request: HttpRequest) -> HttpResponse:
 def add_client(request: HttpRequest) -> HttpResponse:
     """ Контроллер добавления клиента. """
     if request.method == 'POST':
-        if Client.save_client(request.POST):
-            return redirect('clients')
-        # TODO Добавить выведение ошибки при сохранении клиента (экран уведомлений)
+        Client.save_client(request.POST)
+        return redirect('clients')
     managers = Manager.objects.filter(is_active=True)
     context: dict = {'page': 'clients', 'user': request.user, 'managers': managers}
     return render(request, 'accounting_system/clients/add_client.html', context)
@@ -107,7 +104,7 @@ def delete_client(request: HttpRequest) -> HttpResponse:
 @login_required
 def client_profile(request: HttpRequest) -> HttpResponse:
     """ Контроллер профиля клиента. Отображает список услуг присвоенных клиенту. """
-    context = get_client_profile_context(request)
+    context = clients_utils.get_client_profile_context(request)
     return render(request, 'accounting_system/clients/client_profile.html', context)
 
 
@@ -121,8 +118,8 @@ def change_client_form(request: HttpRequest) -> HttpResponse:
 
 def change_client(request: HttpRequest) -> HttpResponse:
     """ Контроллер сохранения изменений данных клиента. """
-    save_client_changes(request)
-    context = get_client_profile_context(request)
+    clients_utils.save_client_changes(request)
+    context = clients_utils.get_client_profile_context(request)
     return render(request, 'accounting_system/clients/client_profile.html', context)
 
 
@@ -134,7 +131,7 @@ def change_client(request: HttpRequest) -> HttpResponse:
 def staff(request: HttpRequest) -> HttpResponse:
     """ Контроллер со списком пользователей зарегестрированных в системе.
         Доступен только администратору и суперпользователю. """
-    managers = get_managers_queryset().order_by('pk')
+    managers = managers_utils.get_managers_queryset().order_by('pk')
     context: dict = {'page': 'staff', 'managers': managers, 'user': request.user}
     return render(request, 'accounting_system/managers/staff.html', context)
 
@@ -209,7 +206,7 @@ def tasks(request: HttpRequest) -> HttpResponse:
         менеджера переданного в manager_pk. """
     manager_pk: str = request.POST.get('manager_pk')
     managers = Manager.objects.filter(is_active=True)
-    tasks_list: list = get_tasks_list(request.user, manager_pk)
+    tasks_list: list = tasks_utils.get_tasks_list(request.user, manager_pk)
     context: dict = {'page': 'tasks', 'user': request.user, 'tasks': tasks_list,
                      'managers': managers, 'manager_pk_for_filter': int(manager_pk) if manager_pk else None}
     return render(request, 'accounting_system/tasks/tasks.html', context)
@@ -224,7 +221,7 @@ def calendar(request: HttpRequest) -> HttpResponse:
         Формирует календарь с датами окончаний сроков действия услуг в виде событий.
         Для администраторов выводит все сроки.
         Для менеджеров - только сроки окончания услуг принадлежащих им клиентов. """
-    event_list = get_event_list(request.user)
+    event_list = calendar_utils.get_event_list(request.user)
     context: dict = {'page': 'calendar', 'user': request.user, 'event_list': event_list}
     return render(request, 'accounting_system/calendar/calendar.html', context)
 
@@ -261,7 +258,7 @@ def add_service_for_client_form(request: HttpRequest) -> HttpResponse:
 @require_POST
 def add_service_for_client(request: HttpRequest) -> HttpResponse:
     """ Контроллер добавления услуги для клиента. Использует логику из модуля utils.py. """
-    create_service_for_client(request)
+    services_utils.create_service_for_client(request)
     return redirect('clients')
 
 
@@ -273,7 +270,7 @@ def delete_service(request: HttpRequest) -> HttpResponse:
         Доступен только администратору и суперпользователю. """
     back_path: str = request.POST.get('back_path')
     service_pk: str = request.POST.get('service_pk')
-    service_class_instance: Union[ECP, OFD, FN, TO] = get_service_class_instance(request)
+    service_class_instance: Union[ECP, OFD, FN, TO] = common_utils.get_service_class_instance(request)
     service_object: Union[ECP, OFD, FN, TO] = get_object_or_404(service_class_instance, pk=service_pk)
     service_object.kill()
     return redirect(back_path)
@@ -287,7 +284,7 @@ def delete_service_from_client(request: HttpRequest) -> HttpResponse:
     if service_pk := request.POST.get('service_pk_for_delete'):
         service_object: Service = get_object_or_404(Service, pk=service_pk)
         service_object.kill()
-        context = get_client_profile_context(request)
+        context = clients_utils.get_client_profile_context(request)
         return render(request, 'accounting_system/clients/client_profile.html', context)
     service_pk: str = request.POST.get('service_pk')
     context: dict = {'page': 'clients', 'user': request.user, 'service_pk': service_pk, 'client_pk': client_pk}
@@ -312,8 +309,8 @@ def change_service_for_client_form(request: HttpRequest) -> HttpResponse:
 
 def save_service_changes(request: HttpRequest) -> HttpResponse:
     """ Контроллер сохранения изменений в услуге. """
-    make_changes_to_the_service(request)
-    context = get_client_profile_context(request)
+    services_utils.make_changes_to_the_service(request)
+    context = clients_utils.get_client_profile_context(request)
     return render(request, 'accounting_system/clients/client_profile.html', context)
 
 
