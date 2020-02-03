@@ -22,7 +22,7 @@ SECRET_KEY = '+te$lq&o1wk4@i+6cutucw1+oe4v1-s$d6r40^s1w^rdjr$u6e'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['5.253.62.83']
+ALLOWED_HOSTS = ['pos-crm.ru']
 
 # Application definition
 
