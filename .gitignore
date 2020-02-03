@@ -2,5 +2,5 @@
 *.pyc
 
 __pycache__/
-migrations/
+accounting_system/migrations/
 
