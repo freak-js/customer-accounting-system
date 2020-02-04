@@ -8,7 +8,7 @@ from accounting_system.models import Manager, Service
 def get_event_list(manager: Manager) -> List[dict]:
     event_list: List[dict] = []
     if manager.is_staff:
-        services_queryset = Service.objects.filter(active=True)
+        services_queryset = Service.objects.filter(active=True, client__active=True)
     else:
         services_queryset = Service.objects.filter(active=True, client__active=True, client__manager=manager.pk)
     for service in services_queryset:
