@@ -47,15 +47,12 @@ def clients(request: HttpRequest) -> HttpResponse:
     """ Контроллер со списком клиентов и живым регистронезависимым поиском. """
     show_all = request.POST.get('show_all')
     if request.user.is_staff:
-        clients_queryset = Client.objects.filter(active=True).order_by('-id') if show_all else Client.objects.filter(
-            active=True).order_by('-id')[:constants.CLIENT_PAGE_LIMIT]
+        clients_queryset = Client.objects.filter(active=True).order_by('-id')
     else:
-        clients_queryset = request.user.get_clients().filter(
-            active=True).order_by('-id') if show_all else request.user.get_clients().filter(active=True).order_by(
-            '-id')[:constants.CLIENT_PAGE_LIMIT]
-
+        clients_queryset = request.user.get_clients().filter(active=True).order_by('-id')
     data_to_find_matches: list = clients_utils.get_data_to_find_matches(clients_queryset)
-    context: dict = {'page': 'clients', 'user': request.user, 'clients': clients_queryset,
+    context: dict = {'page': 'clients', 'user': request.user,
+                     'clients': clients_queryset if show_all else clients_queryset[:constants.CLIENT_PAGE_LIMIT],
                      'data_to_find_matches': str(data_to_find_matches)}
     return render(request, 'accounting_system/clients/clients.html', context)
 
