@@ -63,10 +63,10 @@ def filter_clients(request: HttpRequest) -> HttpResponse:
         Мимикрирует под clients с сохранением функционала. """
     organization_name: str = request.POST.get('search_input')
     if request.user.is_staff:
-        clients_queryset = Client.objects.filter(organization_name=organization_name)
+        clients_queryset = Client.objects.filter(organization_name=organization_name, active=True)
         not_filter_clients = Client.objects.filter(active=True)
     else:
-        clients_queryset = request.user.get_clients().filter(organization_name=organization_name)
+        clients_queryset = request.user.get_clients().filter(organization_name=organization_name, active=True)
         not_filter_clients = request.user.get_clients().filter(active=True)
     data_to_find_matches: list = clients_utils.get_data_to_find_matches(not_filter_clients)
     context: dict = {'page': 'clients', 'user': request.user, 'clients': clients_queryset,
