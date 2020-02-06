@@ -15,7 +15,7 @@
 
         <div class="right-panel-center">
 
-            <form class="flex-center-column" action="/add-client/" method="post">
+            <form class="flex-center-column" action="/add-client/" method="post" onsubmit="LockButton()">
 
                 {% csrf_token %}
 
@@ -147,13 +147,23 @@
 
                 </div>
 
-                <button class="add-manager-button">СОХРАНИТЬ</button>
+                <button class="add-manager-button" id="submit_button">СОХРАНИТЬ</button>
 
             </form>
 
         </div>
 
     </div>
+
+    <script type="text/javascript">
+    
+        var submit_button = document.getElementById('submit_button');
+
+        function LockButton(){
+            submit_button.disabled = true;
+        }
+    
+    </script>
 
 </body>
 
