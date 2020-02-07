@@ -2,6 +2,7 @@
 
 import datetime
 from typing import Union
+import time
 
 from django.http import HttpRequest
 
@@ -36,3 +37,14 @@ def get_service_class_instance(request: HttpRequest) -> Union[CashMachine, ECP, 
     service_type: str = request.POST.get('service_type')
     service_class_instance: Union[CashMachine, ECP, OFD, FN, TO] = constants.SERVICE_TYPE_DICT.get(service_type)
     return service_class_instance
+
+
+def timer(function):
+    """ Функция - декоратор для измерения скорости
+        выполнения кода в милисекундах. """
+    def wrap(*args, **kwargs):
+        start = time.time()
+        res = function(*args, **kwargs)
+        print('Время выполнения:', (time.time() - start) * 1000, 'ms')
+        return res
+    return wrap
