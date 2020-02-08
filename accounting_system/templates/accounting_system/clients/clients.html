@@ -56,21 +56,21 @@
 
                     <div class="flex-column">
 
-                        <h3>{{ client.organization_name }}</h3>
+                        <h3>{{ client.client_organization_name }}</h3>
 
                         <div>
 
-                            <span><span class="client-container-span">тел: </span>{{ client.phone_number }}</span>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <span><span class="client-container-span">тел: </span>{{ client.client_phone_number }}</span>&nbsp;&nbsp;&nbsp;&nbsp;
 
-                            <span><span class="client-container-span">ИНН: </span>{{ client.inn }}</span>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <span><span class="client-container-span">ИНН: </span>{{ client.client_inn }}</span>&nbsp;&nbsp;&nbsp;&nbsp;
 
                             {% if user.is_staff %}
 
-                                <span><span class="client-container-span">менеджер: </span>{{ client.manager }}</span>&nbsp;&nbsp;&nbsp;&nbsp;
+                                <span><span class="client-container-span">менеджер: </span>{{ client.client_manager }}</span>&nbsp;&nbsp;&nbsp;&nbsp;
 
                             {% endif %}
 
-                            <span><span class="client-container-span">услуг: </span>{{ client.get_count_active_services }}</span>
+                            <span><span class="client-container-span">услуг: </span>{{ client.client_count_services }}</span>
 
                         </div>
 
