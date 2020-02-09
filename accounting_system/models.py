@@ -5,7 +5,6 @@ from django.contrib.auth.models import AbstractUser
 
 class Manager(AbstractUser):
     username = models.CharField(verbose_name='Логин', max_length=150, unique=True)
-    tasks_count = models.IntegerField('Количество задач в работе', blank=True, null=True)
     objects = UserManager()
 
     REQUIRED_FIELDS = ['first_name', 'last_name', 'email']
