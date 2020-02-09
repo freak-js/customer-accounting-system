@@ -73,12 +73,15 @@ def filter_clients(request: HttpRequest) -> HttpResponse:
 
 @login_required
 def add_client(request: HttpRequest) -> HttpResponse:
-    """ Контроллер добавления клиента. """
+    """ Контроллер добавления клиента.
+        Дополнительно передает список из ИНН всех активных клиентов,
+        для последующей валидации входных данных фронтендом на дублирование. """
     if request.method == 'POST':
         Client.save_client(request.POST)
         return redirect('clients')
     managers = Manager.objects.filter(is_active=True)
-    context: dict = {'page': 'clients', 'user': request.user, 'managers': managers}
+    inn_list: list = clients_utils.get_inn_list_from_active_clients()
+    context: dict = {'page': 'clients', 'user': request.user, 'managers': managers, 'inn_list': str(inn_list)}
     return render(request, 'accounting_system/clients/add_client.html', context)
 
 

@@ -65,3 +65,9 @@ def get_clients_queryset(manager: Manager) -> Any:
             Count('services', filter=Q(services__active=True) & ~Q(services__fn_add_date=None)) +
             Count('services', filter=Q(services__active=True) & ~Q(services__to_add_date=None))
             ).order_by('-id')
+
+
+def get_inn_list_from_active_clients() -> list:
+    """ Функция генерирующая список из ИНН всех активных клиентов. """
+    inn_list = Client.objects.filter(active=True).values_list('inn', flat=True)
+    return list(inn_list)
