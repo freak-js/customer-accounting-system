@@ -3,4 +3,5 @@
 
 __pycache__/
 accounting_system/migrations/
+customer_accounting_system/secret_settings.py
 
