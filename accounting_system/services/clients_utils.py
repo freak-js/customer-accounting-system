@@ -45,29 +45,44 @@ def save_client_changes(request: HttpRequest) -> None:
     client.save()
 
 
-def get_clients_queryset(manager: Manager) -> Any:
+def get_clients_queryset_for_manager(manager: Manager) -> Any:
     """ Функция генерации queryset с клиентами менеджера.
         Для админиов отдает всех активных менеджеров из базы.
-        Для простого менеджера - только его клиентов.
-        Аннотирует каждый объект по шаблону:
-        client_first_name=Client.first_name,
-        client_email=Client.email
-        и т д. """
+        Для простого менеджера - только его клиентов. """
     if manager.is_staff:
         clients_queryset = Client.objects.filter(active=True)
     else:
         clients_queryset = manager.get_clients().filter(active=True).order_by('-id')
-    return clients_queryset.annotate(
-            client_organization_name=F('organization_name'), client_phone_number=F('phone_number'),
-            client_inn=F('inn'), client_manager=F('manager__last_name'), client_count_services=
-            Count('services', filter=Q(services__active=True) & ~Q(services__ecp_add_date=None)) +
-            Count('services', filter=Q(services__active=True) & ~Q(services__ofd_add_date=None)) +
-            Count('services', filter=Q(services__active=True) & ~Q(services__fn_add_date=None)) +
-            Count('services', filter=Q(services__active=True) & ~Q(services__to_add_date=None))
-            ).order_by('-id')
+    return annotate_clients_queryset(clients_queryset)
 
 
 def get_inn_list_from_active_clients() -> list:
-    """ Функция генерирующая список из ИНН всех активных клиентов. """
+    """ Функция генерирующая список из ИНН всех активных клиентов.
+        Для экрана добавления клиента с целью поиска и запрета дублей. """
     inn_list = Client.objects.filter(active=True).values_list('inn', flat=True)
     return list(inn_list)
+
+
+def get_filtered_clients(request: HttpRequest) -> Any:
+    """ Функция поиска клиентов по названию организации переданной
+        через поисковый инпут. """
+    organization_name: str = request.POST.get('search_input')
+    if request.user.is_staff:
+        clients_queryset = Client.objects.filter(organization_name=organization_name, active=True)
+    else:
+        clients_queryset = request.user.get_clients().filter(organization_name=organization_name, active=True)
+    return annotate_clients_queryset(clients_queryset)
+
+
+def annotate_clients_queryset(clients_queryset):
+    """ Аннотирует каждый объект из кверисета с клиентами по шаблону:
+        client_first_name = Client.first_name,
+        client_email = Client.email и т д. """
+    return clients_queryset.annotate(
+        client_organization_name=F('organization_name'), client_phone_number=F('phone_number'),
+        client_inn=F('inn'), client_manager=F('manager__last_name'), client_count_services=
+        Count('services', filter=Q(services__active=True) & ~Q(services__ecp_add_date=None)) +
+        Count('services', filter=Q(services__active=True) & ~Q(services__ofd_add_date=None)) +
+        Count('services', filter=Q(services__active=True) & ~Q(services__fn_add_date=None)) +
+        Count('services', filter=Q(services__active=True) & ~Q(services__to_add_date=None))
+        ).order_by('-id')
