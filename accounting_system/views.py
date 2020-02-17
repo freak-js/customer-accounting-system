@@ -46,7 +46,7 @@ def logout_view(request: HttpRequest) -> HttpResponse:
 def clients(request: HttpRequest) -> HttpResponse:
     """ Контроллер со списком клиентов и живым регистронезависимым поиском. """
     show_all = request.POST.get('show_all')
-    clients_queryset = clients_utils.get_clients_queryset(request.user)
+    clients_queryset = clients_utils.get_clients_queryset_for_manager(request.user)
     data_to_find_matches: list = clients_utils.get_data_to_find_matches(clients_queryset)
     context: dict = {'page': 'clients', 'user': request.user,
                      'clients': clients_queryset if show_all else clients_queryset[:constants.CLIENT_PAGE_LIMIT],
@@ -58,14 +58,9 @@ def clients(request: HttpRequest) -> HttpResponse:
 def filter_clients(request: HttpRequest) -> HttpResponse:
     """ Контроллер с отфильтрованным списком клиентов по данным полученным из clients.
         Мимикрирует под clients с сохранением функционала. """
-    organization_name: str = request.POST.get('search_input')
-    if request.user.is_staff:
-        clients_queryset = Client.objects.filter(organization_name=organization_name, active=True)
-        not_filter_clients = Client.objects.filter(active=True)
-    else:
-        clients_queryset = request.user.get_clients().filter(organization_name=organization_name, active=True)
-        not_filter_clients = request.user.get_clients().filter(active=True)
-    data_to_find_matches: list = clients_utils.get_data_to_find_matches(not_filter_clients)
+    not_filtered_clients = clients_utils.get_clients_queryset_for_manager(request.user)
+    clients_queryset = clients_utils.get_filtered_clients(request)
+    data_to_find_matches: list = clients_utils.get_data_to_find_matches(not_filtered_clients)
     context: dict = {'page': 'clients', 'user': request.user, 'clients': clients_queryset,
                      'data_to_find_matches': str(data_to_find_matches)}
     return render(request, 'accounting_system/clients/clients.html', context)
